@@ -29,7 +29,7 @@ Después añade el dominio en **Settings → Pages → Custom domain** y vuelve 
 ## Desarrollo local
 
 ```bash
-npm ci
+npm install
 npm run dev
 ```
 
