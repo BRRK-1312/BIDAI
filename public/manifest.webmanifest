@@ -1,0 +1,18 @@
+{
+  "name": "Norte de Portugal 2026",
+  "short_name": "Portugal Norte",
+  "description": "Planning, mapa, rutas y datos prácticos del viaje.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#f4f0e6",
+  "theme_color": "#20201d",
+  "icons": [
+    {
+      "src": "./favicon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any"
+    }
+  ]
+}
