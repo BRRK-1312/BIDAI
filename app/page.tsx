@@ -782,6 +782,7 @@ export default function Home() {
   const [fireStatus, setFireStatus] = useState<"loading" | "ready" | "stale" | "error">("loading");
   const [fireUpdatedAt, setFireUpdatedAt] = useState("");
   const [fireLayerEnabled, setFireLayerEnabled] = useState(true);
+  const [fireEmbedOpen, setFireEmbedOpen] = useState(false);
   const [fireRefreshKey, setFireRefreshKey] = useState(0);
   const [activeSection, setActiveSection] = useState<"today" | "days" | "discoverHub" | "planHub" | "guide" | "events" | "food" | "walks" | "explore" | "campings" | "decide" | "offline">("today");
 
@@ -1449,7 +1450,14 @@ export default function Home() {
         </aside>
 
         <section className="map-panel">
-          <div id="map" ref={mapEl} aria-label="Mapa interactivo de la ruta por el norte de Portugal" />
+          <div id="map" className={activeDay === "TODOS" ? "all-days" : "single-day"} ref={mapEl} aria-label="Mapa interactivo de la ruta por el norte de Portugal" />
+          {fireEmbedOpen && (
+            <div className="fogos-embed">
+              <header><div><b>FOGOS.PT · MAPA OFICIAL</b><span>Información en tiempo real dentro de la guía</span></div><button onClick={() => setFireEmbedOpen(false)}>CERRAR ×</button></header>
+              <iframe src="https://fogos.pt/pt" title="Mapa oficial de incendios de Fogos.pt" loading="eager" />
+              <footer>Fuente: Fogos.pt · Confirma siempre las indicaciones con Protección Civil. Emergencias: 112.</footer>
+            </div>
+          )}
           <div className="map-title">
             <span>42°N / 8°W</span>
             <strong>PORTUGAL<br />NORTE</strong>
@@ -1465,11 +1473,12 @@ export default function Home() {
                 {nearestFire && <p><b>MÁS PRÓXIMO A LA RUTA</b>{nearestFire.incident.municipality || nearestFire.incident.location}<br />≈ {Math.round(nearestFire.distance)} km de un punto del itinerario</p>}
                 <small>Actualizado: {fireUpdatedAt || "consultando…"} · recarga automática cada 5 min</small>
               </>
-            ) : <p>La API no responde desde este navegador. Comprueba el mapa oficial.</p>}
+            ) : <p>GitHub Pages bloquea la lectura directa de la API. Abre aquí el mapa oficial en tiempo real.</p>}
             <div>
               <button className={fireLayerEnabled ? "active" : ""} onClick={() => setFireLayerEnabled((current) => !current)}>{fireLayerEnabled ? "OCULTAR CAPA" : "MOSTRAR CAPA"}</button>
               <button onClick={() => setFireRefreshKey((current) => current + 1)}>ACTUALIZAR</button>
-              <a href="https://fogos.pt/pt" target="_blank" rel="noreferrer">MAPA OFICIAL ↗</a>
+              <button className="open-fogos" onClick={() => setFireEmbedOpen(true)}>VER MAPA EN DIRECTO</button>
+              <a href="https://fogos.pt/pt" target="_blank" rel="noreferrer">ABRIR APARTE ↗</a>
             </div>
             <em>Fuente: Fogos.pt · Verificar con Protección Civil. En emergencia: 112.</em>
           </div>
