@@ -3,8 +3,8 @@
 import { useEffect, useState } from "react";
 
 type Props = {
-  tripLength: 10 | 11 | 12;
-  setTripLength: (value: 10 | 11 | 12) => void;
+  tripLength: 11 | 12 | 13;
+  setTripLength: (value: 11 | 12 | 13) => void;
 };
 
 const lodging = [
@@ -46,7 +46,7 @@ const returnRoutes = [
   {
     id: "directa",
     title: "REGRESO DIRECTO",
-    days: "10 DÍAS",
+    days: "11 DÍAS",
     drive: "≈ 688 km · 7 h 35 de conducción",
     text: "A Guarda → Vitoria. Requiere desmontar temprano y reservar dos descansos largos.",
     maps: "https://www.google.com/maps/dir/41.8897,-8.8464/42.8467,-2.6716",
@@ -54,7 +54,7 @@ const returnRoutes = [
   {
     id: "sanabria",
     title: "PUEBLA DE SANABRIA",
-    days: "11 DÍAS",
+    days: "12 DÍAS",
     drive: "≈ 690 km totales · divididos en 2 etapas",
     text: "A Guarda → Puebla de Sanabria (≈293 km) y, al día siguiente, Vitoria (≈397 km). La extensión más lógica.",
     maps: "https://www.google.com/maps/dir/41.8897,-8.8464/42.0541,-6.6339/42.8467,-2.6716",
@@ -62,7 +62,7 @@ const returnRoutes = [
   {
     id: "ribeira",
     title: "RIBEIRA SACRA",
-    days: "12 DÍAS",
+    days: "13 DÍAS",
     drive: "≈ 695 km totales · divididos en 2 etapas",
     text: "A Guarda → Monforte de Lemos (≈322 km), jornada de miradores y regreso a Vitoria (≈373 km).",
     maps: "https://www.google.com/maps/dir/41.8897,-8.8464/42.5218,-7.5147/42.8467,-2.6716",
@@ -71,9 +71,9 @@ const returnRoutes = [
 
 const decisions = [
   "Reservar alojamiento en Bragança para el 1 de agosto",
-  "Confirmar entrada en Lima Escape el 2 y salida el 4",
+  "Confirmar entrada en Lima Escape el 2 y salida el 5",
   "Confirmar número de noches en Camping Santa Tecla",
-  "Elegir regreso de 10, 11 o 12 días",
+  "Elegir regreso de 11, 12 o 13 días",
   "Descargar mapas y rutas de la primera etapa",
 ] as const;
 
@@ -99,16 +99,16 @@ export default function TripFlexibility({ tripLength, setTripLength }: Props) {
         <small>DURACIÓN DEL VIAJE</small>
         <h3>¿CUÁNDO VOLVEMOS?</h3>
         <div>
-          {([10, 11, 12] as const).map((value) => (
+          {([11, 12, 13] as const).map((value) => (
             <button className={tripLength === value ? "active" : ""} onClick={() => setTripLength(value)} key={value}>
               <b>{value}</b><span>DÍAS</span>
             </button>
           ))}
         </div>
         <p>
-          {tripLength === 10 && "Regreso directo el 10 de agosto desde A Guarda."}
-          {tripLength === 11 && "Día 10 libre y regreso el 11, o noche intermedia en Puebla de Sanabria."}
-          {tripLength === 12 && "Extensión completa: día adicional y regreso el 12, preferentemente vía Ribeira Sacra."}
+          {tripLength === 11 && "Regreso directo el 11 de agosto desde A Guarda."}
+          {tripLength === 12 && "Día 11 libre y regreso el 12, o noche intermedia en Puebla de Sanabria."}
+          {tripLength === 13 && "Extensión completa: día adicional y regreso el 13, preferentemente vía Ribeira Sacra."}
         </p>
       </section>
 
