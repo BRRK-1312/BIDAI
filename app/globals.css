@@ -144,6 +144,56 @@ button { color: inherit; }
 .segment-label { background: transparent !important; border: 0 !important; }
 .segment-label span { display: inline-block; padding: 3px 5px; border: 1px solid rgba(32,32,29,.45); background: rgba(244,240,230,.88); color: #20201d; font: 800 7px/1 Arial,sans-serif; white-space: nowrap; }
 
+.trip-flex { display: grid; gap: 14px; padding: 16px; border-bottom: 1px solid var(--line); background: #eee9dc; }
+.trip-flex section { border: 1px solid var(--ink); background: #f7f3e9; }
+.trip-flex section > header { padding: 14px; border-bottom: 1px solid var(--ink); }
+.trip-flex section > header small, .length-selector > small { display: block; margin-bottom: 5px; font-size: 8px; font-weight: 900; letter-spacing: .12em; }
+.trip-flex h3 { margin: 0; font-size: 25px; line-height: .92; }
+.length-selector { padding: 14px; background: #20201d !important; color: #f7f3e9; }
+.length-selector > div { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin: 13px 0; }
+.length-selector button { display: flex; align-items: baseline; justify-content: center; gap: 5px; min-height: 58px; border: 1px solid #f7f3e9; background: transparent; color: inherit; cursor: pointer; }
+.length-selector button b { font-size: 28px; }
+.length-selector button span { font-size: 8px; font-weight: 900; }
+.length-selector button.active { background: #f0d300; color: #20201d; }
+.length-selector p { margin: 0; font-size: 11px; line-height: 1.45; }
+.day-one-ops > label { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 10px 14px; border-bottom: 1px solid var(--line); font-size: 8px; font-weight: 900; }
+.day-one-ops select { min-width: 145px; padding: 8px; border: 1px solid var(--ink); background: #fffdf7; font: 800 10px Arial,sans-serif; }
+.day-one-ops ol { margin: 0; padding: 0; list-style: none; }
+.day-one-ops li { display: grid; grid-template-columns: 55px 1fr; border-bottom: 1px solid var(--line); }
+.day-one-ops li time { padding: 10px; background: #20201d; color: #fff; font-size: 10px; font-weight: 900; }
+.day-one-ops li span { padding: 10px; font-size: 10px; line-height: 1.35; }
+.delay-advice { margin: 0; padding: 12px 14px; background: #dcebdc; font-size: 10px; font-weight: 800; line-height: 1.4; }
+.delay-advice.warning { background: #ffd9c9; color: #791d0f; }
+.stage-links { display: grid; grid-template-columns: 1fr 1fr; gap: 1px; background: var(--ink); border-top: 1px solid var(--ink); }
+.stage-links a { padding: 11px; background: #fffdf7; color: var(--ink); font-size: 8px; font-weight: 900; text-decoration: none; }
+.stage-links a:last-child { background: #f0d300; }
+.braganca-modes { display: grid; grid-template-columns: repeat(3, 1fr); }
+.braganca-modes article { padding: 12px; border-right: 1px solid var(--line); }
+.braganca-modes article:last-child { border-right: 0; }
+.braganca-modes b { font-size: 9px; }
+.braganca-modes p, .braganca-guide > p { margin: 5px 0 0; font-size: 10px; line-height: 1.45; }
+.braganca-guide > p { padding: 12px 14px; border-top: 1px solid var(--line); }
+.official-agenda { display: grid; grid-template-columns: 1fr 1fr; border-top: 1px solid var(--ink); }
+.official-agenda a { display: flex; flex-direction: column; gap: 3px; padding: 11px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); color: var(--ink); text-decoration: none; }
+.official-agenda b { font-size: 9px; }
+.official-agenda span { font-size: 8px; line-height: 1.35; }
+.lodging-options > div, .return-options > div { display: grid; grid-template-columns: 1fr 1fr; }
+.lodging-options article, .return-options article { padding: 13px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); }
+.lodging-options article small, .return-options article small { display: block; margin-bottom: 5px; font-size: 7px; font-weight: 900; letter-spacing: .1em; color: #8c3d27; }
+.lodging-options article strong, .return-options article strong { display: block; font-size: 13px; line-height: 1.05; }
+.lodging-options article p, .return-options article p { margin: 7px 0; font-size: 9px; line-height: 1.4; }
+.lodging-options article a, .return-options article a { display: inline-block; margin-top: 5px; color: var(--ink); font-size: 8px; font-weight: 900; }
+.lodging-options > .data-note { margin: 0; padding: 11px 13px; }
+.return-options article { grid-column: 1 / -1; }
+.return-options article.selected { background: #eef2c9; box-shadow: inset 5px 0 #74831d; }
+.return-options article > b { display: block; margin-top: 6px; font-size: 10px; }
+.decision-list { padding-bottom: 5px; }
+.decision-list > button { display: grid; grid-template-columns: 32px 1fr; width: calc(100% - 10px); margin: 5px; padding: 0; border: 1px solid var(--line); background: #fffdf7; color: var(--ink); text-align: left; cursor: pointer; }
+.decision-list > button i { display: grid; place-items: center; min-height: 38px; border-right: 1px solid var(--line); font-style: normal; font-weight: 900; }
+.decision-list > button span { align-self: center; padding: 9px; font-size: 9px; font-weight: 800; }
+.decision-list > button.done { opacity: .55; }
+.decision-list > button.done span { text-decoration: line-through; }
+
 .today-tools { padding-bottom: 42px; }
 .today-hero { padding: 25px 20px; color: var(--paper); background: var(--ink); }
 .today-hero > small, .today-section-title small { font-size: 7px; font-weight: 950; letter-spacing: .16em; }
@@ -693,6 +743,12 @@ button { color: inherit; }
   .expense-form label:first-child, .expense-form button { grid-column: 1; }
   .smart-search { grid-template-columns: 1fr; }
   .compare-table { grid-template-columns: 74px 1fr 1fr; }
+  .trip-flex { padding: 10px; }
+  .braganca-modes, .lodging-options > div, .official-agenda { grid-template-columns: 1fr; }
+  .braganca-modes article, .lodging-options article, .official-agenda a { border-right: 0; }
+  .stage-links { grid-template-columns: 1fr; }
+  .length-selector button { min-height: 64px; }
+  .day-one-ops li { grid-template-columns: 62px 1fr; }
 }
 
 @media (prefers-reduced-motion: reduce) {
