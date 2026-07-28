@@ -37,6 +37,11 @@ type ExploreItem = {
   note: string;
   url?: string;
   categories?: string[];
+  location?: string;
+  specialty?: string;
+  hours?: string;
+  price?: string;
+  visitTime?: string;
 };
 
 type CampingItem = {
@@ -471,18 +476,30 @@ const explore: ExploreItem[] = [
   { name: "Santuário da Peneda", type: "desvío", base: 1, coords: [41.9732, -8.2225], note: "Santuario monumental en un valle glaciar.", url: "https://www.visitportugal.com/es/content/santuario-de-nossa-senhora-da-peneda" },
   { name: "Castro Laboreiro", type: "desvío", base: 1, coords: [42.0302, -8.1582], note: "Aldea, castillo y paisaje serrano; excursión larga." },
   { name: "Ponte de Lima", type: "interés", base: 1, coords: [41.7676, -8.5831], note: "Villa histórica, puente romano-medieval y paseo fluvial." },
+  { name: "Museu da Água ao Ar Livre do Rio Vez", type: "interés", base: 1, coords: [41.8472, -8.4158], note: "Centro interpretativo y recorrido exterior junto al Vez; combina bien con la Valeta.", location: "Arcos de Valdevez", specialty: "Agua, paisaje y patrimonio del río Vez", hours: "Exterior abierto; comprobar agenda del centro", price: "Exterior libre; actividades según programa", visitTime: "45–75 min", categories: ["museo", "lluvia-parcial"], url: "https://www.cmav.pt/viver/cultura/espacos/rede-de-equipamentos/museu-da-agua-ao-ar-livre-do-rio-vez" },
+  { name: "Paço de Giela", type: "interés", base: 1, coords: [41.8337, -8.4287], note: "Casa-torre medieval rehabilitada con interpretación histórica y vistas sobre Arcos.", location: "Arcos de Valdevez", specialty: "Arquitectura medieval e historia local", hours: "Horario estacional; comprobar antes de salir", price: "Confirmar tarifa", visitTime: "60–90 min", categories: ["museo", "lluvia-parcial"], url: "https://www.cmav.pt/viver/cultura/espacos/rede-de-equipamentos/paco-de-giela" },
+  { name: "Porta do Mezio", type: "interés", base: 1, coords: [41.8839, -8.3129], note: "Puerta del parque nacional con recepción e interpretación ambiental.", location: "Mezio · Arcos de Valdevez", specialty: "Naturaleza y Peneda-Gerês", hours: "Horario estacional; confirmar actividades", price: "Confirmar según actividad", visitTime: "45–90 min", categories: ["museo", "lluvia"], url: "https://www.portadomezio.pt/" },
+  { name: "Museu de Arqueologia D. Diogo de Sousa", type: "interés", base: 1, coords: [41.5448, -8.4264], note: "La mejor introducción al pasado romano de Bracara Augusta.", location: "Braga", specialty: "Arqueología y romanización", hours: "Mar–dom 10:00–17:30; confirmar festivos", price: "Confirmar tarifa vigente", visitTime: "75–120 min", categories: ["museo", "lluvia"], url: "https://www.museusemonumentos.pt/pt/museus-e-monumentos/museu-de-arqueologia-d-diogo-de-sousa" },
+  { name: "Museu dos Biscainhos", type: "interés", base: 1, coords: [41.5518, -8.4299], note: "Palacio barroco, artes decorativas y jardín histórico.", location: "Braga", specialty: "Casa histórica y artes decorativas", hours: "Mar–dom 10:00–12:30 y 14:00–17:30", price: "Confirmar tarifa y salas abiertas", visitTime: "60–90 min", categories: ["museo", "lluvia"], url: "https://www.museusemonumentos.pt/pt/museus-e-monumentos/museu-dos-biscainhos" },
   { name: "Praia do Cabedelo", type: "playa", base: 2, coords: [41.6783, -8.8384], note: "La playa de la segunda base: dunas, surf y puesta de sol." },
   { name: "Praia do Rodanho", type: "playa", base: 2, coords: [41.6525, -8.8244], note: "Amplia y menos urbana, al sur de Cabedelo." },
   { name: "Praia da Amorosa", type: "playa", base: 2, coords: [41.6502, -8.8266], note: "Pasarelas, dunas y paseo litoral." },
   { name: "Praia da Arda / Mariana", type: "playa", base: 2, coords: [41.7553, -8.8718], note: "Playa atlántica abierta entre Carreço y Afife." },
   { name: "Praia Fluvial das Azenhas", type: "fluvial", base: 2, coords: [41.8764, -8.7909], note: "Baño interior en Vilar de Mouros; verificar caudal y vigilancia." },
   { name: "Vila Nova de Cerveira", type: "desvío", base: 2, coords: [41.9413, -8.7426], note: "Villa de arte, fortaleza y miradores sobre el Miño." },
+  { name: "Navio-Hospital Gil Eannes", type: "interés", base: 2, coords: [41.6907, -8.8317], note: "Buque hospital visitable ligado a la flota bacaladera portuguesa.", location: "Doca Comercial · Viana", specialty: "Historia marítima y medicina a bordo", hours: "Horario estacional; comprobar el mismo día", price: "Confirmar tarifa vigente", visitTime: "75–120 min", categories: ["museo", "lluvia"], url: "https://www.fundacaogileannes.pt/" },
+  { name: "Museu do Traje de Viana do Castelo", type: "interés", base: 2, coords: [41.6935, -8.8287], note: "Traje tradicional, bordado e identidad local en la Praça da República.", location: "Praça da República · Viana", specialty: "Traje, bordado y cultura popular", hours: "Lun–vie 9:00–13:00 y 14:00–17:00; confirmar fin de semana", price: "Confirmar tarifa municipal", visitTime: "60–90 min", categories: ["museo", "lluvia"], url: "https://www.cm-viana-castelo.pt/visite-viana/o-que-visitar/museus/" },
+  { name: "Museu de Artes Decorativas", type: "interés", base: 2, coords: [41.6924, -8.8256], note: "Mobiliario, cerámica y artes decorativas en una casa histórica.", location: "Largo de São Domingos · Viana", specialty: "Artes decorativas portuguesas", hours: "Horario municipal; comprobar festivos", price: "Confirmar tarifa municipal", visitTime: "60–90 min", categories: ["museo", "lluvia"], url: "https://www.cm-viana-castelo.pt/visite-viana/o-que-visitar/museus/" },
   { name: "Praia do Muíño", type: "fluvial", base: 3, coords: [41.9004, -8.8671], note: "Playa en la desembocadura del Miño, protegida del oleaje.", url: "https://www.turismoaguarda.es/playas-fluviales/" },
   { name: "Praia de Area Grande", type: "playa", base: 3, coords: [41.9207, -8.8744], note: "Cala atlántica junto a la senda litoral de A Guarda." },
   { name: "Praia de Fedorento", type: "playa", base: 3, coords: [41.9132, -8.8762], note: "Pequeña playa rocosa al norte del puerto." },
   { name: "A Cabeciña", type: "interés", base: 3, coords: [42.0543, -8.8509], note: "Petroglifos, castro y mirador sobre Mougás." },
   { name: "Serra da Groba", type: "desvío", base: 3, coords: [42.1046, -8.8386], note: "Miradores, caballos y panorámica de Baiona." },
   { name: "Tomiño", type: "desvío", base: 3, coords: [41.9877, -8.7554], note: "Mercado, Miño y conexión con Vila Nova de Cerveira." },
+  { name: "MASAT · Museo Arqueolóxico de Santa Trega", type: "interés", base: 3, coords: [41.8921, -8.8692], note: "Piezas del castro que ayudan a comprender el yacimiento.", location: "Monte Santa Trega · A Guarda", specialty: "Cultura castreña y arqueología", hours: "Mar–dom 10:00–20:00 en temporada; lunes cerrado", price: "Confirmar tarifa y acceso al monte", visitTime: "30–60 min", categories: ["museo", "lluvia-parcial"], url: "https://www.turismoaguarda.es/museos/" },
+  { name: "Museo do Mar de A Guarda", type: "interés", base: 3, coords: [41.9011, -8.8776], note: "Museo en la Atalaia dedicado al oficio pesquero y la vida marítima.", location: "Atalaia · Puerto de A Guarda", specialty: "Pesca y patrimonio marítimo", hours: "Jue–dom 11:00–14:00 y 16:00–19:00; confirmar temporada", price: "Confirmar tarifa", visitTime: "30–60 min", categories: ["museo", "lluvia"], url: "https://www.turismoaguarda.es/museos/" },
+  { name: "Casa de la Navegación de Baiona", type: "interés", base: 3, coords: [42.1192, -8.8496], note: "Historia del puerto, la Arribada y las navegaciones, con opción de realidad virtual.", location: "Ventura Misa, 17 · Baiona", specialty: "Navegación e historia portuaria", hours: "Mar–sáb 10:00–13:00 y 16:00–19:00", price: "2 €; 4 € con RV; combinada 3 €", visitTime: "60–90 min", categories: ["museo", "lluvia"], url: "https://www.baiona.gal/instalaciones/culturales/" },
+  { name: "Museo de la Carabela Pinta", type: "interés", base: 3, coords: [42.1205, -8.8473], note: "Réplica flotante que muestra cómo era la vida a bordo en el siglo XV.", location: "Paseo Elduayen · Baiona", specialty: "Navegación del siglo XV", hours: "Horario estacional; comprobar por viento y mantenimiento", price: "3 €; existe entrada combinada", visitTime: "30–45 min", categories: ["museo", "lluvia-parcial"], url: "https://www.baiona.gal/instalaciones/culturales/" },
 ];
 
 const campings: CampingItem[] = [
@@ -603,10 +620,11 @@ export default function Home() {
     if (exploreFilter === "pozas") return place.type === "fluvial";
     if (exploreFilter === "fluvial") return place.type === "fluvial";
     if (exploreFilter === "playas") return place.type === "playa";
+    if (exploreFilter === "museos") return place.categories?.includes("museo") ?? false;
     if (exploreFilter === "patrimonio") return place.type === "interés" || place.type === "desvío";
     if (exploreFilter === "foto") return /Peneda|Castro|Ponte|Cabeciña|Groba|Cerveira/i.test(place.name);
     if (exploreFilter === "surf") return /Cabedelo|Arda|Area Grande|Amorosa/i.test(place.name);
-    if (exploreFilter === "lluvia") return place.type === "interés" || /Ponte de Lima|Cerveira/i.test(place.name);
+    if (exploreFilter === "lluvia") return place.categories?.some((category) => category.startsWith("lluvia")) || /Ponte de Lima|Cerveira/i.test(place.name);
     return true;
   });
 
@@ -1469,19 +1487,23 @@ export default function Home() {
               <div className="discovery-filters">
                 {[
                   ["todos", "TODO"], ["pozas", "POZAS"], ["fluvial", "FLUVIALES"], ["playas", "ATLÁNTICAS"],
-                  ["patrimonio", "PATRIMONIO"], ["foto", "MIRADORES / FOTO"], ["surf", "SURF"], ["lluvia", "CON LLUVIA"],
+                  ["museos", "MUSEOS"], ["patrimonio", "PATRIMONIO"], ["foto", "MIRADORES / FOTO"], ["surf", "SURF"], ["lluvia", "CON LLUVIA"],
                 ].map(([value, label]) => <button className={exploreFilter === value ? "active" : ""} key={value} onClick={() => setExploreFilter(value)}>{label}</button>)}
                 <button onClick={() => setActiveSection("food")}>RESTAURANTES / MERCADOS</button>
                 <button onClick={() => setActiveSection("events")}>FIESTAS / EVENTOS</button>
               </div>
-              {filteredExplore.map((place) => (
-                <article className={visited.includes(place.name) ? "visited" : ""} key={place.name}>
-                  <span className={`place-type ${place.type}`}>{place.type}</span>
+              {exploreFilter === "museos" && <div className="museum-intro"><b>12 MUSEOS Y CENTROS DE INTERPRETACIÓN</b><p>Ordenados por la base más cómoda. Los horarios pueden cambiar en agosto o festivos: comprueba siempre la web oficial.</p></div>}
+              {filteredExplore.map((place) => {
+                const isMuseum = place.categories?.includes("museo");
+                return (
+                <article className={`${visited.includes(place.name) ? "visited " : ""}${isMuseum ? "museum-card" : ""}`} key={place.name}>
+                  <span className={`place-type ${isMuseum ? "museo" : place.type}`}>{isMuseum ? "museo" : place.type}</span>
                   <strong>{place.name}</strong>
-                  <small>BASE 0{place.base}</small>
+                  <small>BASE 0{place.base}{place.location ? ` · ${place.location}` : ""}</small>
                   <p>{place.note}</p>
+                  {isMuseum && <div className="museum-facts"><p><b>🏛️ COLECCIÓN</b>{place.specialty}</p><p><b>🕒 HORARIO</b>{place.hours}</p><p><b>🎟️ PRECIO</b>{place.price}</p><p><b>⏱️ VISITA</b>{place.visitTime}</p></div>}
                   <div className="link-row">
-                    {place.url && <a href={place.url} target="_blank" rel="noreferrer">INFO OFICIAL ↗</a>}
+                    {place.url && <a href={place.url} target="_blank" rel="noreferrer">WEB OFICIAL ↗</a>}
                     <a href={`https://www.google.com/maps/search/?api=1&query=${place.coords[0]},${place.coords[1]}`} target="_blank" rel="noreferrer">GOOGLE ↗</a>
                     <a href={osmUrl(place.coords)} target="_blank" rel="noreferrer">OSM ↗</a>
                     <button onClick={() => addToPlan(place.name, suggestedDay(place.base))}>+ PLAN</button>
@@ -1489,7 +1511,7 @@ export default function Home() {
                     <button className={visited.includes(place.name) ? "active" : ""} onClick={() => toggleList(place.name, visited, setVisited)}>✓</button>
                   </div>
                 </article>
-              ))}
+              )})}
               <p className="data-note">En zonas fluviales y pozas naturales, comprobad calidad del agua, caudal, accesos y vigilancia el mismo día.</p>
             </div>
           )}
