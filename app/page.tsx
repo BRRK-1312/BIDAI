@@ -6,6 +6,7 @@ import "leaflet/dist/leaflet.css";
 import DecisionCenter from "./decision-center";
 import ContentGuide from "./content-guide";
 import TodayTools from "./today-tools";
+import TripFlexibility from "./trip-flexibility";
 
 type Stop = {
   name: string;
@@ -196,7 +197,7 @@ const dayRoutes = [
   { day: "07", title: "Valença + Tui", color: "#386d65", points: [[41.678611, -8.823056], [42.0308, -8.6459], [42.0472, -8.6444], [41.8897, -8.8464]] },
   { day: "08", title: "Santa Trega", color: "#2f7d5b", points: [[41.8897, -8.8464], [41.8925, -8.8697], [41.9012, -8.8747], [41.8897, -8.8464]] },
   { day: "09", title: "Costa de Oia", color: "#2f7d5b", points: [[41.8897, -8.8464], [42.0024, -8.8767], [42.0581, -8.8662], [42.1012, -8.8974], [42.1209, -8.8492], [41.8897, -8.8464]] },
-  { day: "10", title: "Regreso", color: "#20201d", points: [[41.8897, -8.8464], [42.8467, -2.6716]] },
+  { day: "10", title: "Regreso flexible", color: "#20201d", points: [[41.8897, -8.8464], [42.8467, -2.6716]] },
 ] as const;
 
 const walkingRoutes = [
@@ -297,6 +298,9 @@ const dailyPlans = [
 ] as const;
 
 const events: EventItem[] = [
+  { date: "1–2 AGO", place: "BRAGANÇA", title: "Noite na Baixa", time: "TARDE–NOCHE · CONSULTAR PROGRAMA", note: "Animación municipal en el centro histórico durante la noche de alojamiento. Es el evento mejor integrado con la nueva primera etapa.", priority: true, coords: [41.8061, -6.7567], url: "https://turismo.cm-braganca.pt/a-viagem/agenda" },
+  { date: "2–10 AGO", place: "BRAGANÇA", title: "Sons de Verão", time: "HORARIO SEGÚN PROGRAMA", note: "Ciclo cultural municipal desde el 2 de agosto. Solo encaja si hay actividad matinal antes de salir hacia Lima Escape.", coords: [41.8071, -6.758], url: "https://www.cm-braganca.pt/transparencia/comunicacao/agenda-e-eventos/todos-os-eventos" },
+  { date: "1 AGO", place: "ZAMORA", title: "Zamora Románica 2026", time: "ACTIVIDAD DURANTE EL DÍA", note: "Contenido cultural de la agenda provincial. Comprobar sede y horario exactos; no debe retrasar la salida hacia Miranda.", coords: [41.5035, -5.7446], url: "https://turismoenzamora.es/agenda/" },
   { date: "1 AGO", place: "VIANA DO CASTELO", title: "Feirão na Praça · danzas y cantares", time: "DESDE 10:00", note: "Mercado mensual en la Praça da República con actuación del Grupo de Danças e Cantares. Una parada sencilla antes de recorrer el centro o subir a Santa Luzia.", coords: [41.6934, -8.8282], url: "https://www.cm-viana-castelo.pt/areas-de-atividade/comunicacao/agenda-de-eventos/evento/feirao-na-praca-agosto-2026" },
   { date: "1 AGO", place: "VILA PRAIA DE ÂNCORA", title: "Âncora FolK 26 · jornada final", time: "PROGRAMA DEL DÍA", note: "Encuentro internacional de culturas y tradiciones. Última jornada de la novena edición; consultar el programa municipal para actuaciones y ubicaciones.", coords: [41.8109, -8.8617], url: "https://www.cm-caminha.pt/visitar/agenda-proximos-eventos/evento/ancora-folk-26" },
   { date: "1–10 AGO", place: "VILA PRAIA DE ÂNCORA", title: "Festa do Mar e da Sardinha", time: "COMIDAS Y CENAS", note: "Fiesta gastronómica del 1 al 16 de agosto con sardina, pescado y marisco. Muy fácil de combinar con Afife, Âncora o SonicBlast.", priority: true, coords: [41.8118, -8.8677], url: "https://www.cm-caminha.pt/visitar/agenda-proximos-eventos/evento/festa-do-mar-e-da-sardinha-16" },
@@ -715,6 +719,7 @@ export default function Home() {
   const [storageLoaded, setStorageLoaded] = useState(false);
   const [roadRouteStatus, setRoadRouteStatus] = useState<"loading" | "ready" | "partial">("loading");
   const [roadRouteSummaries, setRoadRouteSummaries] = useState<Record<string, RoadRouteSummary>>({});
+  const [tripLength, setTripLength] = useState<10 | 11 | 12>(10);
   const [activeSection, setActiveSection] = useState<"today" | "days" | "discoverHub" | "planHub" | "guide" | "events" | "food" | "walks" | "explore" | "campings" | "decide" | "offline">("today");
 
   const visibleStops = useMemo(
@@ -786,6 +791,15 @@ export default function Home() {
     window.addEventListener("offline", off);
     return () => { window.clearTimeout(timer); window.removeEventListener("online", on); window.removeEventListener("offline", off); };
   }, []);
+
+  useEffect(() => {
+    const saved = Number(localStorage.getItem("bidai-trip-length"));
+    if (saved === 10 || saved === 11 || saved === 12) setTripLength(saved);
+  }, []);
+
+  useEffect(() => {
+    localStorage.setItem("bidai-trip-length", String(tripLength));
+  }, [tripLength]);
 
   useEffect(() => {
     let cancelled = false;
@@ -1359,12 +1373,7 @@ export default function Home() {
 
           {activeSection === "days" && (
             <>
-              <div className="pace-picker">
-                <small>ITINERARIO ACTUALIZADO · 10–12 DÍAS</small>
-                <p><b>1 AGO:</b> Vitoria → Zamora → Miranda do Douro → noche en Bragança.</p>
-                <p><b>2–4 AGO:</b> Lima Escape, dos noches y salida el día 4.</p>
-                <p><b>10 AGO:</b> decisión abierta: regreso, noche adicional o extensión hasta el 12.</p>
-              </div>
+              <TripFlexibility tripLength={tripLength} setTripLength={setTripLength} />
               <div className="pace-picker" aria-label="Intensidad del planning">
                 <small>RITMO DEL VIAJE</small>
                 <div>
