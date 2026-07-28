@@ -274,6 +274,15 @@ button { color: inherit; }
 .place-type.fluvial { background: #20a56b; }
 .place-type.interés { background: #6656a8; }
 .place-type.desvío { background: #d39b22; color: #20201d; }
+.place-type.museo { background: #9b3d75; }
+.museum-intro { padding: 13px 16px; border-bottom: 1px solid var(--ink); background: #f3e7ee; }
+.museum-intro b { font-size: 8px; letter-spacing: .12em; color: #782a59; }
+.museum-intro p { margin: 5px 0 0; font-size: 9px; line-height: 1.45; }
+.explore-list > article.museum-card { border-left: 4px solid #9b3d75; background: linear-gradient(90deg, #fbf2f7 0, var(--paper) 26%); }
+.museum-facts { display: grid; grid-template-columns: 1fr 1fr; margin: 5px 0 7px; border: 1px solid var(--line); background: rgba(255,255,255,.58); }
+.explore-list > article .museum-facts p { margin: 0; padding: 8px; display: grid; gap: 4px; border-right: 1px solid var(--line); border-bottom: 1px solid var(--line); color: var(--ink); }
+.museum-facts p:nth-child(even) { border-right: 0; }
+.museum-facts p b { font-size: 7px; letter-spacing: .08em; color: #782a59; }
 .camping-list > article { border-left: 5px solid #6b4aa1; }
 .camping-list > article.main-camping { border-left-color: var(--orange); background: rgba(229,72,44,.045); gap: 8px; }
 .camping-head.alternatives { background: #6b4aa1; }
@@ -337,8 +346,9 @@ button { color: inherit; }
   .walk-list .practical-grid p { border-right: 0; }
   .walk-list .practical-grid .route-caution { grid-column: auto; }
   .elevation-profile, .bath-detail, .bath-detail > b, .bath-detail > a { grid-column: auto; }
-  .bath-detail, .info-matrix { grid-template-columns: 1fr; }
+  .bath-detail, .info-matrix, .museum-facts { grid-template-columns: 1fr; }
   .food-list .info-matrix p, .camping-list .info-matrix p { border-right: 0; }
+  .explore-list > article .museum-facts p { border-right: 0; }
 }
 
 @media print {
