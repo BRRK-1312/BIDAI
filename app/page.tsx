@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { Map as LeafletMap, LayerGroup } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import DecisionCenter from "./decision-center";
+import ContentGuide from "./content-guide";
 
 type Stop = {
   name: string;
@@ -616,7 +617,7 @@ export default function Home() {
   const [eventCheckedAt, setEventCheckedAt] = useState("");
   const [eventChecking, setEventChecking] = useState(false);
   const [storageLoaded, setStorageLoaded] = useState(false);
-  const [activeSection, setActiveSection] = useState<"days" | "events" | "food" | "walks" | "explore" | "campings" | "decide" | "offline">("days");
+  const [activeSection, setActiveSection] = useState<"days" | "guide" | "events" | "food" | "walks" | "explore" | "campings" | "decide" | "offline">("days");
 
   const visibleStops = useMemo(
     () => (activeBase === 0 ? stops : stops.filter((stop) => stop.base === activeBase)),
@@ -1153,9 +1154,10 @@ export default function Home() {
         <aside className="route-panel">
           <div className="route-head">
             <p className="eyebrow">GUÍA DE VIAJE</p>
-            <h2>{activeSection === "days" ? "RUTA POR DÍAS" : activeSection === "events" ? "FIESTAS" : activeSection === "food" ? "QUÉ COMER" : activeSection === "walks" ? "RUTAS A PIE" : activeSection === "explore" ? "EXPLORAR" : activeSection === "campings" ? "CAMPINGS" : activeSection === "decide" ? "DECIDIR" : "MODO VIAJE"}</h2>
+            <h2>{activeSection === "days" ? "RUTA POR DÍAS" : activeSection === "guide" ? "GUÍA PRÁCTICA" : activeSection === "events" ? "FIESTAS" : activeSection === "food" ? "QUÉ COMER" : activeSection === "walks" ? "RUTAS A PIE" : activeSection === "explore" ? "EXPLORAR" : activeSection === "campings" ? "CAMPINGS" : activeSection === "decide" ? "DECIDIR" : "MODO VIAJE"}</h2>
             <p>
               {activeSection === "days" && "Las líneas indican la secuencia. Abre cada jornada para obtener el recorrido por carretera."}
+              {activeSection === "guide" && "Selección editorial para decidir qué hacer, qué eliminar y cómo adaptar cada jornada a agosto, lluvia o cansancio."}
               {activeSection === "events" && "Agenda cultural integrada en las fechas y bases del viaje. Los puntos rosas aparecen también en el mapa."}
               {activeSection === "food" && "Platos populares organizados por cada camping base."}
               {activeSection === "walks" && "Recorridos fáciles o medios con filtros por base, dificultad, duración y posibilidad de baño."}
@@ -1167,6 +1169,7 @@ export default function Home() {
           </div>
           <div className="guide-tabs" role="tablist" aria-label="Contenido de la guía">
             <button className={activeSection === "days" ? "active" : ""} onClick={() => setActiveSection("days")}>DÍAS</button>
+            <button className={activeSection === "guide" ? "active" : ""} onClick={() => setActiveSection("guide")}>GUÍA</button>
             <button className={activeSection === "events" ? "active" : ""} onClick={() => setActiveSection("events")}>FIESTAS</button>
             <button className={activeSection === "food" ? "active" : ""} onClick={() => setActiveSection("food")}>COMER</button>
             <button className={activeSection === "walks" ? "active" : ""} onClick={() => setActiveSection("walks")}>RUTAS</button>
@@ -1282,6 +1285,8 @@ export default function Home() {
               </div>
             </>
           )}
+
+          {activeSection === "guide" && <ContentGuide openSection={setActiveSection} />}
 
           {activeSection === "events" && (
             <div className="event-list">
