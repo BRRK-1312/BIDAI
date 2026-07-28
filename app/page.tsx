@@ -90,23 +90,6 @@ type RoadRouteSummary = {
   fallback: boolean;
 };
 
-type FireIncident = {
-  id: string;
-  coords: [number, number];
-  location: string;
-  district: string;
-  municipality: string;
-  nature: string;
-  status: string;
-  statusColor: string;
-  personnel: number;
-  vehicles: number;
-  aircraft: number;
-  important: boolean;
-  date: string;
-  hour: string;
-};
-
 const dayOperations: Record<string, {
   base: 1 | 2 | 3;
   parking: string;
@@ -705,51 +688,11 @@ function nearestRoadPoint(geometry: [number, number][], target: [number, number]
   }, geometry[0]);
 }
 
-function parseFireIncidents(payload: unknown): FireIncident[] {
-  const root = payload as {
-    features?: Array<{ geometry?: { coordinates?: [number, number] }; properties?: Record<string, unknown> }>;
-    data?: unknown;
-  };
-  const nested = root?.data as typeof root | undefined;
-  const rawFeatures = root?.features || nested?.features || (Array.isArray(root?.data) ? root.data : Array.isArray(payload) ? payload : []);
-
-  return rawFeatures.flatMap((entry: unknown) => {
-    const feature = entry as { geometry?: { coordinates?: [number, number] }; properties?: Record<string, unknown> };
-    const properties = feature.properties || (entry as Record<string, unknown>);
-    const coordinates = feature.geometry?.coordinates;
-    const lat = Number(coordinates?.[1] ?? properties.lat);
-    const lng = Number(coordinates?.[0] ?? properties.lng);
-    if (!Number.isFinite(lat) || !Number.isFinite(lng) || properties.active === false) return [];
-    const rawId = properties.id ?? properties._id ?? properties.sadoId;
-    const id = typeof rawId === "object" && rawId !== null && "$id" in rawId
-      ? String((rawId as { $id: unknown }).$id)
-      : String(rawId || `${lat}-${lng}`);
-    const color = String(properties.statusColor || "e5482c").replace("#", "");
-    return [{
-      id,
-      coords: [lat, lng] as [number, number],
-      location: String(properties.location || properties.localidade || "Localização não indicada"),
-      district: String(properties.district || ""),
-      municipality: String(properties.concelho || ""),
-      nature: String(properties.natureza || "Incêndio rural"),
-      status: String(properties.status || "Ativo"),
-      statusColor: /^[0-9a-f]{6}$/i.test(color) ? `#${color}` : "#e5482c",
-      personnel: Number(properties.man || 0),
-      vehicles: Number(properties.terrain || 0),
-      aircraft: Number(properties.aerial || 0),
-      important: Boolean(properties.important),
-      date: String(properties.date || ""),
-      hour: String(properties.hour || ""),
-    }];
-  });
-}
-
 export default function Home() {
   const mapEl = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
   const layersRef = useRef<Record<number, LayerGroup>>({});
   const dayRouteLayersRef = useRef<Record<string, LayerGroup>>({});
-  const fireLayerRef = useRef<LayerGroup | null>(null);
   const [activeBase, setActiveBase] = useState(0);
   const [activeDay, setActiveDay] = useState("TODOS");
   const [travelPace, setTravelPace] = useState<"tranquilo" | "normal" | "completo">("normal");
@@ -777,13 +720,7 @@ export default function Home() {
   const [roadRouteStatus, setRoadRouteStatus] = useState<"loading" | "ready" | "partial">("loading");
   const [roadRouteSummaries, setRoadRouteSummaries] = useState<Record<string, RoadRouteSummary>>({});
   const [tripLength, setTripLength] = useState<10 | 11 | 12>(10);
-  const [mapReady, setMapReady] = useState(false);
-  const [fireIncidents, setFireIncidents] = useState<FireIncident[]>([]);
-  const [fireStatus, setFireStatus] = useState<"loading" | "ready" | "stale" | "error">("loading");
-  const [fireUpdatedAt, setFireUpdatedAt] = useState("");
-  const [fireLayerEnabled, setFireLayerEnabled] = useState(true);
   const [fireEmbedOpen, setFireEmbedOpen] = useState(false);
-  const [fireRefreshKey, setFireRefreshKey] = useState(0);
   const [activeSection, setActiveSection] = useState<"today" | "days" | "discoverHub" | "planHub" | "guide" | "events" | "food" | "walks" | "explore" | "campings" | "decide" | "offline">("today");
 
   const visibleStops = useMemo(
@@ -813,13 +750,6 @@ export default function Home() {
     return true;
   });
 
-  const nearestFire = useMemo(() => {
-    if (!fireIncidents.length) return null;
-    return fireIncidents.map((incident) => ({
-      incident,
-      distance: Math.min(...stops.map((stop) => distanceKm(incident.coords, stop.coords))),
-    })).sort((a, b) => a.distance - b.distance)[0];
-  }, [fireIncidents]);
 
   useEffect(() => {
     const timer = window.setTimeout(() => {
@@ -1104,48 +1034,6 @@ export default function Home() {
 
   useEffect(() => {
     let cancelled = false;
-    async function loadActiveFires() {
-      setFireStatus((current) => current === "ready" ? current : "loading");
-      try {
-        const response = await fetch("https://api.fogos.pt/v2/incidents/active?geojson=true&limit=100", {
-          cache: "no-store",
-          headers: { Accept: "application/json" },
-        });
-        if (!response.ok) throw new Error(`Fogos.pt ${response.status}`);
-        const incidents = parseFireIncidents(await response.json());
-        if (cancelled) return;
-        const updatedAt = new Intl.DateTimeFormat("es-ES", { dateStyle: "short", timeStyle: "short" }).format(new Date());
-        setFireIncidents(incidents);
-        setFireUpdatedAt(updatedAt);
-        setFireStatus("ready");
-        try {
-          localStorage.setItem("bidai-fogos-cache", JSON.stringify({ incidents, updatedAt }));
-        } catch {
-          // La información en directo sigue disponible aunque no se pueda guardar la copia.
-        }
-      } catch {
-        if (cancelled) return;
-        try {
-          const cached = JSON.parse(localStorage.getItem("bidai-fogos-cache") || "null") as { incidents?: FireIncident[]; updatedAt?: string } | null;
-          if (cached?.incidents) {
-            setFireIncidents(cached.incidents);
-            setFireUpdatedAt(cached.updatedAt || "copia anterior");
-            setFireStatus("stale");
-            return;
-          }
-        } catch {
-          // Sin copia válida: muestra acceso directo al mapa oficial.
-        }
-        setFireStatus("error");
-      }
-    }
-    loadActiveFires();
-    const interval = window.setInterval(loadActiveFires, 5 * 60 * 1000);
-    return () => { cancelled = true; window.clearInterval(interval); };
-  }, [fireRefreshKey]);
-
-  useEffect(() => {
-    let cancelled = false;
     async function init() {
       if (!mapEl.current || mapRef.current) return;
       const L = await import("leaflet");
@@ -1283,49 +1171,15 @@ export default function Home() {
         marker.addTo(foodLayer);
       });
 
-      fireLayerRef.current = L.layerGroup();
       mapRef.current = map;
-      setMapReady(true);
     }
     init();
     return () => {
       cancelled = true;
-      setMapReady(false);
       mapRef.current?.remove();
       mapRef.current = null;
-      fireLayerRef.current = null;
     };
   }, []);
-
-  useEffect(() => {
-    if (!mapReady || !mapRef.current || !fireLayerRef.current) return;
-    let cancelled = false;
-    async function drawFireLayer() {
-      const L = await import("leaflet");
-      if (cancelled || !mapRef.current || !fireLayerRef.current) return;
-      const layer = fireLayerRef.current;
-      layer.clearLayers();
-      fireIncidents.forEach((incident) => {
-        const marker = L.circleMarker(incident.coords, {
-          radius: incident.important ? 11 : 8,
-          color: "#fffdf7",
-          weight: incident.important ? 4 : 3,
-          fillColor: incident.statusColor,
-          fillOpacity: 0.96,
-          className: "fire-marker",
-        });
-        marker.bindTooltip(`🔥 ${incident.nature} · ${incident.status}`, { direction: "top", offset: [0, -8] });
-        marker.bindPopup(
-          `<div class="map-popup fire-popup"><span>FOGOS.PT · ${incident.date} ${incident.hour}</span><strong>${incident.location}</strong><b>${incident.status} · ${incident.nature}</b><p>👨‍🚒 ${incident.personnel} · 🚒 ${incident.vehicles} · ✈️ ${incident.aircraft}</p><a href="https://fogos.pt/pt/fogo/${encodeURIComponent(incident.id)}/detalhe" target="_blank" rel="noreferrer">VER EN FOGOS.PT ↗</a></div>`,
-        );
-        marker.addTo(layer);
-      });
-      if (fireLayerEnabled && !mapRef.current.hasLayer(layer)) layer.addTo(mapRef.current);
-      if (!fireLayerEnabled && mapRef.current.hasLayer(layer)) mapRef.current.removeLayer(layer);
-    }
-    drawFireLayer();
-    return () => { cancelled = true; };
-  }, [fireIncidents, fireLayerEnabled, mapReady]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -1449,8 +1303,8 @@ export default function Home() {
           </div>
         </aside>
 
-        <section className="map-panel">
-          <div id="map" className={activeDay === "TODOS" ? "all-days" : "single-day"} ref={mapEl} aria-label="Mapa interactivo de la ruta por el norte de Portugal" />
+        <section className={`map-panel ${activeDay === "TODOS" ? "all-days" : "single-day"}`}>
+          <div id="map" ref={mapEl} aria-label="Mapa interactivo de la ruta por el norte de Portugal" />
           {fireEmbedOpen && (
             <div className="fogos-embed">
               <header><div><b>FOGOS.PT · MAPA OFICIAL</b><span>Información en tiempo real dentro de la guía</span></div><button onClick={() => setFireEmbedOpen(false)}>CERRAR ×</button></header>
@@ -1462,26 +1316,10 @@ export default function Home() {
             <span>42°N / 8°W</span>
             <strong>PORTUGAL<br />NORTE</strong>
           </div>
-          <div className={`fire-live-panel ${fireStatus}`}>
-            <div className="fire-live-head">
-              <span><i /> FOGOS.PT</span>
-              <b>{fireStatus === "ready" ? "EN DIRECTO" : fireStatus === "stale" ? "COPIA ANTERIOR" : fireStatus === "loading" ? "CARGANDO" : "SIN DATOS"}</b>
-            </div>
-            {fireStatus !== "error" ? (
-              <>
-                <strong>{fireIncidents.length} INCENDIOS ACTIVOS</strong>
-                {nearestFire && <p><b>MÁS PRÓXIMO A LA RUTA</b>{nearestFire.incident.municipality || nearestFire.incident.location}<br />≈ {Math.round(nearestFire.distance)} km de un punto del itinerario</p>}
-                <small>Actualizado: {fireUpdatedAt || "consultando…"} · recarga automática cada 5 min</small>
-              </>
-            ) : <p>GitHub Pages bloquea la lectura directa de la API. Abre aquí el mapa oficial en tiempo real.</p>}
-            <div>
-              <button className={fireLayerEnabled ? "active" : ""} onClick={() => setFireLayerEnabled((current) => !current)}>{fireLayerEnabled ? "OCULTAR CAPA" : "MOSTRAR CAPA"}</button>
-              <button onClick={() => setFireRefreshKey((current) => current + 1)}>ACTUALIZAR</button>
-              <button className="open-fogos" onClick={() => setFireEmbedOpen(true)}>VER MAPA EN DIRECTO</button>
-              <a href="https://fogos.pt/pt" target="_blank" rel="noreferrer">ABRIR APARTE ↗</a>
-            </div>
-            <em>Fuente: Fogos.pt · Verificar con Protección Civil. En emergencia: 112.</em>
-          </div>
+          <button className="fire-alert-button" onClick={() => setFireEmbedOpen(true)} aria-label="Abrir avisos de incendios en tiempo real">
+            <span>🔥</span>
+            <span><b>AVISOS INCENDIOS</b><small>FOGOS.PT · EN DIRECTO</small></span>
+          </button>
           <div className={`transport-legend route-${roadRouteStatus}`}>
             <span><i /> COCHE</span><span><i /> A PIE</span>
             <small>
