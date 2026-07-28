@@ -5,6 +5,7 @@ import { useEffect, useMemo, useState } from "react";
 type BaseId = 1 | 2 | 3;
 type Interest = "baño" | "senderismo" | "patrimonio" | "museos" | "gastronomía" | "surf";
 type Weather = "sol" | "nubes" | "lluvia" | "viento";
+type Expense = { id: string; concept: string; category: string; amount: number; date: string };
 
 type SmartPlace = {
   name: string;
@@ -77,13 +78,25 @@ export default function DecisionCenter() {
   const [near, setNear] = useState<{coords:[number,number]; status:string}|null>(null);
   const [compareA, setCompareA] = useState("interior");
   const [compareB, setCompareB] = useState("braga");
-  const [budget, setBudget] = useState({camping: 300, fuel: 220, tolls: 45, food: 450, tickets: 80, activities: 100, actual: 0});
+  const [expenses, setExpenses] = useState<Expense[]>([]);
+  const [expenseReady, setExpenseReady] = useState(false);
+  const [showExpense, setShowExpense] = useState(false);
+  const [expenseDraft, setExpenseDraft] = useState({concept:"", category:"Comida", amount:""});
 
   useEffect(() => {
-    const saved = localStorage.getItem("bidai-budget");
-    if (saved) try { setBudget(JSON.parse(saved)); } catch {}
+    const saved = localStorage.getItem("bidai-expenses");
+    if (saved) {
+      try { setExpenses(JSON.parse(saved)); } catch {}
+    } else {
+      const legacy = localStorage.getItem("bidai-budget");
+      if (legacy) try {
+        const previous = Number(JSON.parse(legacy)?.actual || 0);
+        if (previous > 0) setExpenses([{id:"legacy", concept:"Gastos registrados anteriormente", category:"Otros", amount:previous, date:new Date().toISOString()}]);
+      } catch {}
+    }
+    setExpenseReady(true);
   }, []);
-  useEffect(() => { localStorage.setItem("bidai-budget", JSON.stringify(budget)); }, [budget]);
+  useEffect(() => { if (expenseReady) localStorage.setItem("bidai-expenses", JSON.stringify(expenses)); }, [expenses,expenseReady]);
 
   const ranked = useMemo(() => places.map((place) => {
     const km = distanceKm(bases[base].coords, place.coords);
@@ -129,9 +142,16 @@ export default function DecisionCenter() {
     );
   };
   const nearResults = near ? places.map(p=>({...p,km:distanceKm(near.coords,p.coords)})).sort((a,b)=>a.km-b.km).slice(0,5) : [];
-  const total = Object.entries(budget).filter(([k])=>k!=="actual").reduce((sum,[,v])=>sum+Number(v),0);
+  const totalExpenses = expenses.reduce((sum,item)=>sum+item.amount,0);
   const a = dayOptions.find(d=>d.id===compareA)!;
   const b = dayOptions.find(d=>d.id===compareB)!;
+  const addExpense = () => {
+    const amount = Number(expenseDraft.amount);
+    if (!expenseDraft.concept.trim() || !Number.isFinite(amount) || amount <= 0) return;
+    setExpenses([{id:crypto.randomUUID(), concept:expenseDraft.concept.trim(), category:expenseDraft.category, amount, date:new Date().toISOString()}, ...expenses]);
+    setExpenseDraft({concept:"",category:"Comida",amount:""});
+    setShowExpense(false);
+  };
 
   return <div className="decision-center">
     <section className="decision-hero">
@@ -200,9 +220,19 @@ export default function DecisionCenter() {
     </section>
 
     <section className="tool-section">
-      <header><small>PRESUPUESTO</small><h3>PREVISTO Y REAL</h3></header>
-      <div className="budget-grid">{Object.entries(budget).map(([key,value])=><label key={key}>{key==="actual"?"GASTADO HASTA HOY":key.toUpperCase()}<span><input type="number" min="0" value={value} onChange={e=>setBudget({...budget,[key]:Number(e.target.value)})}/> €</span></label>)}</div>
-      <div className="budget-total"><div><small>PRESUPUESTO TOTAL</small><b>{total} €</b><span>{(total/2).toFixed(0)} € por persona</span></div><div><small>DISPONIBLE</small><b className={total-budget.actual<0?"over":""}>{total-budget.actual} €</b><span>{budget.actual} € registrados</span></div></div>
+      <header><small>GESTOR DE GASTOS</small><h3>GASTOS DEL VIAJE</h3></header>
+      <button className="add-expense-button" onClick={()=>setShowExpense(!showExpense)}>{showExpense ? "CANCELAR" : "+ AÑADIR NUEVO GASTO"}</button>
+      {showExpense && <div className="expense-form">
+        <label>CONCEPTO<input autoFocus value={expenseDraft.concept} onChange={e=>setExpenseDraft({...expenseDraft,concept:e.target.value})} placeholder="Camping, comida, gasolina…"/></label>
+        <label>CATEGORÍA<select value={expenseDraft.category} onChange={e=>setExpenseDraft({...expenseDraft,category:e.target.value})}>{["Camping","Comida","Gasolina","Peajes","Entradas","Actividades","Compra","Otros"].map(x=><option key={x}>{x}</option>)}</select></label>
+        <label>IMPORTE<input type="number" min="0" step="0.01" value={expenseDraft.amount} onChange={e=>setExpenseDraft({...expenseDraft,amount:e.target.value})} placeholder="0,00"/></label>
+        <button onClick={addExpense}>GUARDAR GASTO</button>
+      </div>}
+      <div className="expense-total"><small>TOTAL GASTADO</small><b>{totalExpenses.toFixed(2)} €</b><span>{(totalExpenses/2).toFixed(2)} € por persona</span></div>
+      <div className="expense-list">
+        {!expenses.length && <p>Todavía no hay gastos. Pulsa «Añadir nuevo gasto» para registrar el primero.</p>}
+        {expenses.map(item=><article key={item.id}><span><small>{item.category} · {new Date(item.date).toLocaleDateString("es-ES",{day:"2-digit",month:"2-digit"})}</small><b>{item.concept}</b></span><strong>{item.amount.toFixed(2)} €</strong><button aria-label={`Eliminar ${item.concept}`} onClick={()=>setExpenses(expenses.filter(x=>x.id!==item.id))}>×</button></article>)}
+      </div>
     </section>
   </div>;
 }
