@@ -10,6 +10,7 @@ type Props = {
   openSection: (section: Section) => void;
 };
 
+// Modo operativo de viaje: mantiene las decisiones diarias separadas del mapa principal.
 const days = [
   { day: "01", date: "1 AGO", title: "Vitoria → Lima Escape", base: "Lima Escape", drive: "620 km · 6 h 15", normal: ["Salida temprana de Vitoria", "Parada larga para comer", "Llegada y montaje", "Paseo junto al río Lima"], calm: ["Viaje directo", "Montaje con luz", "Cena y descanso"], rain: ["Viaje directo", "Compra antes de llegar", "Montaje y descanso"], alternative: "Ponte de Lima solo si se llega con margen.", event: "Feirão de Viana y Âncora FolK quedan fuera de ruta: no recomendados este día.", maps: "https://www.google.com/maps/dir/42.8467,-2.6716/41.824395,-8.318062" },
   { day: "02", date: "2 AGO", title: "Soajo + Lindoso", base: "Lima Escape", drive: "80 km · 2 h", normal: ["Soajo y espigueiros", "Poço Negro", "Comida local", "Castillo y espigueiros de Lindoso"], calm: ["Soajo", "Poço Negro", "Regreso temprano"], rain: ["Soajo", "Castillo de Lindoso", "Cafés de Arcos"], alternative: "Cambiar Poço Negro por Poço da Gola si el aparcamiento está lleno.", event: "Noite do Folclore en Arcos · 21:30; encaja al regresar.", maps: "https://www.google.com/maps/dir/41.824395,-8.318062/41.8721,-8.2634/41.8662,-8.1998/41.824395,-8.318062" },
