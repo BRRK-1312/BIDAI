@@ -730,6 +730,7 @@ export default function Home() {
   const [storageLoaded, setStorageLoaded] = useState(false);
   const [roadRouteStatus, setRoadRouteStatus] = useState<"loading" | "ready" | "partial">("loading");
   const [roadRouteSummaries, setRoadRouteSummaries] = useState<Record<string, RoadRouteSummary>>({});
+  const [mapLayersRevision, setMapLayersRevision] = useState(0);
   const [tripLength, setTripLength] = useState<11 | 12 | 13>(11);
   const [fireEmbedOpen, setFireEmbedOpen] = useState(false);
   const [activeSection, setActiveSection] = useState<"today" | "days" | "discoverHub" | "planHub" | "guide" | "events" | "food" | "walks" | "explore" | "campings" | "decide" | "offline">("today");
@@ -1057,6 +1058,7 @@ export default function Home() {
         attribution: "© OpenStreetMap contributors",
         maxZoom: 18,
       }).addTo(map);
+      mapRef.current = map;
 
       const all = L.layerGroup().addTo(map);
       layersRef.current[0] = all;
@@ -1182,7 +1184,7 @@ export default function Home() {
         marker.addTo(foodLayer);
       });
 
-      mapRef.current = map;
+      setMapLayersRevision((current) => current + 1);
     }
     init();
     return () => {
@@ -1203,7 +1205,7 @@ export default function Home() {
     if (activeSection === "explore") layersRef.current[2]?.addTo(map);
     if (activeSection === "campings") layersRef.current[3]?.addTo(map);
     if (activeSection === "food") layersRef.current[4]?.addTo(map);
-  }, [activeSection]);
+  }, [activeSection, mapLayersRevision]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -1216,8 +1218,11 @@ export default function Home() {
     if (activeDay !== "TODOS") {
       const route = dayRoutes.find((item) => item.day === activeDay);
       if (route) map.fitBounds(route.points.map((point) => [point[0], point[1]] as [number, number]), { padding: [35, 35] });
+    } else {
+      map.fitBounds([[41.35, -9.05], [42.95, -2.55]], { padding: [25, 25] });
     }
-  }, [activeDay]);
+    window.requestAnimationFrame(() => map.invalidateSize());
+  }, [activeDay, mapLayersRevision]);
 
   useEffect(() => {
     const map = mapRef.current;
@@ -1227,6 +1232,7 @@ export default function Home() {
     } else {
       map.setView(bases[activeBase - 1].center, activeBase === 1 ? 10 : 11);
     }
+    window.requestAnimationFrame(() => map.invalidateSize());
   }, [activeBase]);
 
   function focusStop(stop: Stop) {
