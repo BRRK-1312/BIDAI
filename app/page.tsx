@@ -3,6 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Map as LeafletMap, LayerGroup } from "leaflet";
 import "leaflet/dist/leaflet.css";
+import DecisionCenter from "./decision-center";
 
 type Stop = {
   name: string;
@@ -599,7 +600,7 @@ export default function Home() {
   const [eventCheckedAt, setEventCheckedAt] = useState("");
   const [eventChecking, setEventChecking] = useState(false);
   const [storageLoaded, setStorageLoaded] = useState(false);
-  const [activeSection, setActiveSection] = useState<"days" | "events" | "food" | "walks" | "explore" | "campings" | "offline">("days");
+  const [activeSection, setActiveSection] = useState<"days" | "events" | "food" | "walks" | "explore" | "campings" | "decide" | "offline">("days");
 
   const visibleStops = useMemo(
     () => (activeBase === 0 ? stops : stops.filter((stop) => stop.base === activeBase)),
@@ -1136,7 +1137,7 @@ export default function Home() {
         <aside className="route-panel">
           <div className="route-head">
             <p className="eyebrow">GUÍA DE VIAJE</p>
-            <h2>{activeSection === "days" ? "RUTA POR DÍAS" : activeSection === "events" ? "FIESTAS" : activeSection === "food" ? "QUÉ COMER" : activeSection === "walks" ? "RUTAS A PIE" : activeSection === "explore" ? "EXPLORAR" : activeSection === "campings" ? "CAMPINGS" : "MODO VIAJE"}</h2>
+            <h2>{activeSection === "days" ? "RUTA POR DÍAS" : activeSection === "events" ? "FIESTAS" : activeSection === "food" ? "QUÉ COMER" : activeSection === "walks" ? "RUTAS A PIE" : activeSection === "explore" ? "EXPLORAR" : activeSection === "campings" ? "CAMPINGS" : activeSection === "decide" ? "DECIDIR" : "MODO VIAJE"}</h2>
             <p>
               {activeSection === "days" && "Las líneas indican la secuencia. Abre cada jornada para obtener el recorrido por carretera."}
               {activeSection === "events" && "Agenda cultural integrada en las fechas y bases del viaje. Los puntos rosas aparecen también en el mapa."}
@@ -1144,6 +1145,7 @@ export default function Home() {
               {activeSection === "walks" && "Recorridos fáciles o medios con filtros por base, dificultad, duración y posibilidad de baño."}
               {activeSection === "explore" && "Playas, piscinas fluviales y excursiones adicionales agrupadas por base."}
               {activeSection === "campings" && "Alternativas del directorio aportado. Pulsa una ficha para localizarla en Google Maps."}
+              {activeSection === "decide" && "Buscador, asistente diario, distancias, combinaciones, comparador, ubicación opcional y presupuesto."}
               {activeSection === "offline" && "Favoritos, visitados, planning personal y descargas para utilizar la guía sin conexión."}
             </p>
           </div>
@@ -1154,6 +1156,7 @@ export default function Home() {
             <button className={activeSection === "walks" ? "active" : ""} onClick={() => setActiveSection("walks")}>RUTAS</button>
             <button className={activeSection === "explore" ? "active" : ""} onClick={() => setActiveSection("explore")}>EXPLORAR</button>
             <button className={activeSection === "campings" ? "active" : ""} onClick={() => setActiveSection("campings")}>CAMPINGS</button>
+            <button className={activeSection === "decide" ? "active" : ""} onClick={() => setActiveSection("decide")}>DECIDIR</button>
             <button className={activeSection === "offline" ? "active" : ""} onClick={() => setActiveSection("offline")}>VIAJE</button>
           </div>
 
@@ -1560,6 +1563,8 @@ export default function Home() {
               <p className="data-note">La lista procede del PDF aportado, publicado en 2013. Las tres bases del itinerario siguen destacadas en el mapa; estas son alternativas y requieren confirmar apertura.</p>
             </div>
           )}
+
+          {activeSection === "decide" && <DecisionCenter />}
 
           {activeSection === "offline" && (
             <div className="offline-panel">
