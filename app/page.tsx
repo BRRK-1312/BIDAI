@@ -76,6 +76,19 @@ type DiaryEntry = {
   weather?: string;
 };
 
+type RoadRoute = {
+  geometry: [number, number][];
+  distance: number;
+  duration: number;
+  legs: Array<{ distance: number; duration: number }>;
+};
+
+type RoadRouteSummary = {
+  distance: number;
+  duration: number;
+  fallback: boolean;
+};
+
 const dayOperations: Record<string, {
   base: 1 | 2 | 3;
   parking: string;
@@ -605,6 +618,69 @@ function distanceKm(a: readonly number[], b: readonly number[]) {
   return 6371 * 2 * Math.atan2(Math.sqrt(h), Math.sqrt(1 - h));
 }
 
+const routingServers = [
+  "https://routing.openstreetmap.de/routed-car/route/v1/driving",
+  "https://router.project-osrm.org/route/v1/driving",
+];
+
+async function fetchRoadRoute(day: string, points: readonly (readonly number[])[]): Promise<RoadRoute | null> {
+  const cacheKey = `bidai-road-route-v2-${day}`;
+  try {
+    const cached = localStorage.getItem(cacheKey);
+    if (cached) return JSON.parse(cached) as RoadRoute;
+  } catch {
+    // El mapa sigue funcionando aunque el almacenamiento privado esté bloqueado.
+  }
+
+  const coordinates = points.map(([lat, lng]) => `${lng},${lat}`).join(";");
+  const query = "overview=simplified&geometries=geojson&steps=false&annotations=false";
+
+  for (const server of routingServers) {
+    try {
+      const response = await fetch(`${server}/${coordinates}?${query}`, {
+        signal: AbortSignal.timeout(9000),
+      });
+      if (!response.ok) continue;
+      const payload = await response.json();
+      const result = payload?.routes?.[0];
+      if (!result?.geometry?.coordinates?.length) continue;
+      const roadRoute: RoadRoute = {
+        geometry: result.geometry.coordinates.map(([lng, lat]: [number, number]) => [lat, lng]),
+        distance: result.distance,
+        duration: result.duration,
+        legs: (result.legs || []).map((leg: { distance: number; duration: number }) => ({
+          distance: leg.distance,
+          duration: leg.duration,
+        })),
+      };
+      try {
+        localStorage.setItem(cacheKey, JSON.stringify(roadRoute));
+      } catch {
+        // La caché es una mejora, no un requisito.
+      }
+      return roadRoute;
+    } catch {
+      // Prueba el siguiente servicio y, si ambos fallan, dibuja la línea aproximada.
+    }
+  }
+  return null;
+}
+
+function formatRoadDuration(seconds: number) {
+  const totalMinutes = Math.max(1, Math.round(seconds / 60));
+  const hours = Math.floor(totalMinutes / 60);
+  const minutes = totalMinutes % 60;
+  return hours ? `${hours} h ${minutes ? `${minutes} min` : ""}`.trim() : `${minutes} min`;
+}
+
+function nearestRoadPoint(geometry: [number, number][], target: [number, number]) {
+  return geometry.reduce((nearest, point) => {
+    const currentDistance = (point[0] - target[0]) ** 2 + (point[1] - target[1]) ** 2;
+    const nearestDistance = (nearest[0] - target[0]) ** 2 + (nearest[1] - target[1]) ** 2;
+    return currentDistance < nearestDistance ? point : nearest;
+  }, geometry[0]);
+}
+
 export default function Home() {
   const mapEl = useRef<HTMLDivElement>(null);
   const mapRef = useRef<LeafletMap | null>(null);
@@ -634,6 +710,8 @@ export default function Home() {
   const [eventCheckedAt, setEventCheckedAt] = useState("");
   const [eventChecking, setEventChecking] = useState(false);
   const [storageLoaded, setStorageLoaded] = useState(false);
+  const [roadRouteStatus, setRoadRouteStatus] = useState<"loading" | "ready" | "partial">("loading");
+  const [roadRouteSummaries, setRoadRouteSummaries] = useState<Record<string, RoadRouteSummary>>({});
   const [activeSection, setActiveSection] = useState<"today" | "days" | "discoverHub" | "planHub" | "guide" | "events" | "food" | "walks" | "explore" | "campings" | "decide" | "offline">("today");
 
   const visibleStops = useMemo(
@@ -953,15 +1031,33 @@ export default function Home() {
       const all = L.layerGroup().addTo(map);
       layersRef.current[0] = all;
 
-      dayRoutes.forEach((route) => {
+      let fallbackCount = 0;
+      const summaries: Record<string, RoadRouteSummary> = {};
+      await Promise.all(dayRoutes.map(async (route) => {
         const routeLayer = L.layerGroup().addTo(map);
         dayRouteLayersRef.current[route.day] = routeLayer;
-        L.polyline(route.points.map(([lat, lng]) => [lat, lng] as [number, number]), {
+        const roadRoute = await fetchRoadRoute(route.day, route.points);
+        if (cancelled) return;
+        const geometry = roadRoute?.geometry || route.points.map(([lat, lng]) => [lat, lng] as [number, number]);
+        const fallback = !roadRoute;
+        fallbackCount += fallback ? 1 : 0;
+        const fallbackDistance = route.points.slice(0, -1).reduce(
+          (total, point, index) => total + distanceKm(point, route.points[index + 1]),
+          0,
+        );
+        summaries[route.day] = {
+          distance: roadRoute?.distance || fallbackDistance * 1000,
+          duration: roadRoute?.duration || 0,
+          fallback,
+        };
+        L.polyline(geometry, {
           color: route.color,
-          weight: route.day === "01" || route.day === "10" ? 2 : 4,
-          opacity: route.day === "01" || route.day === "10" ? 0.36 : 0.78,
-          dashArray: route.day === "01" || route.day === "10" ? "7 8" : undefined,
-        }).bindTooltip(`DÍA ${route.day} · ${route.title}`).addTo(routeLayer);
+          weight: route.day === "01" || route.day === "10" ? 3 : 5,
+          opacity: route.day === "01" || route.day === "10" ? 0.58 : 0.84,
+          dashArray: fallback ? "7 8" : undefined,
+        }).bindTooltip(
+          `DÍA ${route.day} · ${route.title} · ${Math.round(summaries[route.day].distance / 1000)} km${roadRoute ? ` · ${formatRoadDuration(roadRoute.duration)}` : " · APROX."}`,
+        ).addTo(routeLayer);
         route.points.slice(1, -1).forEach(([lat, lng], index) => {
           L.circleMarker([lat, lng], { radius: 10, color: route.color, weight: 2, fillColor: "#f4f0e6", fillOpacity: 1 })
             .bindTooltip(`${index + 1} → ${route.title}`, { permanent: false, direction: "top" })
@@ -969,11 +1065,23 @@ export default function Home() {
         });
         route.points.slice(0, -1).forEach(([lat, lng], index) => {
           const next = route.points[index + 1];
-          const midpoint: [number, number] = [(lat + next[0]) / 2, (lng + next[1]) / 2];
-          const km = Math.round(distanceKm([lat, lng], next));
-          L.marker(midpoint, { interactive: false, icon: L.divIcon({ className: "segment-label", html: `<span>→ ${km} km</span>`, iconSize: [58, 18] }) }).addTo(routeLayer);
+          const midpoint = nearestRoadPoint(geometry, [(lat + next[0]) / 2, (lng + next[1]) / 2]);
+          const leg = roadRoute?.legs[index];
+          const km = Math.round((leg?.distance || distanceKm([lat, lng], next) * 1000) / 1000);
+          const duration = leg ? ` · ${formatRoadDuration(leg.duration)}` : "";
+          L.marker(midpoint, {
+            interactive: false,
+            icon: L.divIcon({
+              className: "segment-label",
+              html: `<span>→ ${km} km${duration}</span>`,
+              iconSize: [96, 18],
+              iconAnchor: [48, 9],
+            }),
+          }).addTo(routeLayer);
         });
-      });
+      }));
+      setRoadRouteSummaries(summaries);
+      setRoadRouteStatus(fallbackCount ? "partial" : "ready");
 
       walkingRoutes.forEach((walk) => {
         const routeLayer = dayRouteLayersRef.current[walk.day];
@@ -1182,7 +1290,14 @@ export default function Home() {
             <span>42°N / 8°W</span>
             <strong>PORTUGAL<br />NORTE</strong>
           </div>
-          <div className="transport-legend"><span><i /> COCHE</span><span><i /> A PIE</span><small>Las flechas muestran dirección y distancia aproximada en línea recta.</small></div>
+          <div className={`transport-legend route-${roadRouteStatus}`}>
+            <span><i /> COCHE</span><span><i /> A PIE</span>
+            <small>
+              {roadRouteStatus === "loading" && "CALCULANDO CARRETERAS REALES…"}
+              {roadRouteStatus === "ready" && "RUTA REAL · DISTANCIA Y TIEMPO POR TRAMO"}
+              {roadRouteStatus === "partial" && "RUTA REAL CUANDO ESTÁ DISPONIBLE · TRAZO DISCONTINUO = APROX."}
+            </small>
+          </div>
           <div className="legend">
             {bases.map((base) => (
               <button key={base.id} onClick={() => setActiveBase(base.id)}>
@@ -1260,7 +1375,14 @@ export default function Home() {
                     <article className={open ? "selected" : ""} key={route.day}>
                       <button onClick={() => setActiveDay(open ? "TODOS" : route.day)} aria-expanded={open}>
                         <span style={{ borderColor: route.color }}>{route.day}</span>
-                        <strong>{route.title}<small>{plan.date} · {plan.drive}</small></strong>
+                        <strong>
+                          {route.title}
+                          <small>
+                            {plan.date} · {roadRouteSummaries[route.day]
+                              ? `${Math.round(roadRouteSummaries[route.day].distance / 1000)} KM${roadRouteSummaries[route.day].duration ? ` · ${formatRoadDuration(roadRouteSummaries[route.day].duration)}` : " · APROX."}`
+                              : plan.drive}
+                          </small>
+                        </strong>
                         <b>{open ? "−" : "+"}</b>
                       </button>
                       {open && (
