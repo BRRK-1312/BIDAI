@@ -5,6 +5,7 @@ import type { Map as LeafletMap, LayerGroup } from "leaflet";
 import "leaflet/dist/leaflet.css";
 import DecisionCenter from "./decision-center";
 import ContentGuide from "./content-guide";
+import TodayTools from "./today-tools";
 
 type Stop = {
   name: string;
@@ -71,6 +72,8 @@ type DiaryEntry = {
   expense: string;
   recommended: boolean;
   photo?: string;
+  visitedAt?: string;
+  weather?: string;
 };
 
 const dayOperations: Record<string, {
@@ -179,6 +182,20 @@ const dayRoutes = [
   { day: "09", title: "Costa de Oia", color: "#2f7d5b", points: [[41.8897, -8.8464], [42.0024, -8.8767], [42.0581, -8.8662], [42.1012, -8.8974], [42.1209, -8.8492], [41.8897, -8.8464]] },
   { day: "10", title: "Regreso", color: "#20201d", points: [[41.8897, -8.8464], [42.8467, -2.6716]] },
 ] as const;
+
+const walkingRoutes = [
+  { day: "02", title: "POZAS DE SOAJO", points: [[41.8721, -8.2634], [41.8755, -8.2692]] },
+  { day: "03", title: "ECOVIA DO VEZ", points: [[41.9701, -8.4067], [41.9733, -8.3746]] },
+  { day: "05", title: "VIANA A PIE", points: [[41.6932, -8.8329], [41.7044, -8.8342]] },
+  { day: "08", title: "CAMIÑOS DO TREGA", points: [[41.9012, -8.8747], [41.8925, -8.8697]] },
+  { day: "09", title: "POZAS DE MOUGÁS", points: [[42.0558, -8.8492], [42.0581, -8.8662]] },
+] as const;
+
+function eventMatchesDay(date: string, day: number) {
+  const values = date.match(/\d+/g)?.map(Number) || [];
+  if (!values.length) return false;
+  return values.length > 1 ? day >= values[0] && day <= values[1] : day === values[0];
+}
 
 const dailyPlans = [
   {
@@ -617,7 +634,7 @@ export default function Home() {
   const [eventCheckedAt, setEventCheckedAt] = useState("");
   const [eventChecking, setEventChecking] = useState(false);
   const [storageLoaded, setStorageLoaded] = useState(false);
-  const [activeSection, setActiveSection] = useState<"days" | "guide" | "events" | "food" | "walks" | "explore" | "campings" | "decide" | "offline">("days");
+  const [activeSection, setActiveSection] = useState<"today" | "days" | "discoverHub" | "planHub" | "guide" | "events" | "food" | "walks" | "explore" | "campings" | "decide" | "offline">("today");
 
   const visibleStops = useMemo(
     () => (activeBase === 0 ? stops : stops.filter((stop) => stop.base === activeBase)),
@@ -837,6 +854,16 @@ export default function Home() {
     });
   }
 
+  function stampDiary(name: string) {
+    const stop = stops.find((item) => item.name === name);
+    const day = stop?.day.match(/\d+/)?.[0].padStart(2, "0") || "";
+    const forecast = weather[day];
+    updateDiary(name, {
+      visitedAt: new Intl.DateTimeFormat("es-ES", { dateStyle: "medium", timeStyle: "short" }).format(new Date()),
+      weather: forecast ? `${forecast.max}° / ${forecast.min}° · lluvia ${forecast.rain}% · viento ${forecast.wind} km/h` : "Sin previsión guardada",
+    });
+  }
+
   function addDiaryPhoto(name: string, file?: File) {
     if (!file || file.size > 2_000_000) return;
     const reader = new FileReader();
@@ -904,7 +931,7 @@ export default function Home() {
   function printDiary() {
     const popup = window.open("", "_blank");
     if (!popup) return;
-    popup.document.write(`<!doctype html><html><head><title>Diario Norte de Portugal</title><style>body{font:15px Arial;max-width:820px;margin:30px auto;padding:0 24px;color:#20201d}h1{font-size:42px;line-height:.9}article{break-inside:avoid;border-top:2px solid;padding:18px 0}img{max-width:100%;max-height:420px;object-fit:cover}small{font-weight:bold;letter-spacing:.1em}</style></head><body><h1>DIARIO<br>NORTE DE PORTUGAL 2026</h1>${Object.entries(diary).map(([name, entry]) => `<article><small>${entry.recommended ? "RECOMENDADO" : "NO REPETIRÍA"} · ${entry.rating || "—"}/5 ★</small><h2>${name}</h2>${entry.photo ? `<img src="${entry.photo}" alt="">` : ""}<p>${entry.note || "Sin nota."}</p><p><b>Comimos:</b> ${entry.food || "—"} · <b>Gasto:</b> ${entry.expense || "—"}</p></article>`).join("")}<script>window.onload=()=>window.print();<\/script></body></html>`);
+    popup.document.write(`<!doctype html><html><head><title>Diario Norte de Portugal</title><style>body{font:15px Arial;max-width:820px;margin:30px auto;padding:0 24px;color:#20201d}h1{font-size:42px;line-height:.9}article{break-inside:avoid;border-top:2px solid;padding:18px 0}img{max-width:100%;max-height:420px;object-fit:cover}small{font-weight:bold;letter-spacing:.1em}</style></head><body><h1>DIARIO<br>NORTE DE PORTUGAL 2026</h1>${Object.entries(diary).map(([name, entry]) => `<article><small>${entry.recommended ? "RECOMENDADO" : "NO REPETIRÍA"} · ${entry.rating || "—"}/5 ★</small><h2>${name}</h2><p><b>Visita:</b> ${entry.visitedAt || "—"}<br><b>Tiempo:</b> ${entry.weather || "—"}</p>${entry.photo ? `<img src="${entry.photo}" alt="">` : ""}<p>${entry.note || "Sin nota."}</p><p><b>Comimos:</b> ${entry.food || "—"} · <b>Gasto:</b> ${entry.expense || "—"}</p></article>`).join("")}<script>window.onload=()=>window.print();<\/script></body></html>`);
     popup.document.close();
   }
 
@@ -940,6 +967,20 @@ export default function Home() {
             .bindTooltip(`${index + 1} → ${route.title}`, { permanent: false, direction: "top" })
             .addTo(routeLayer);
         });
+        route.points.slice(0, -1).forEach(([lat, lng], index) => {
+          const next = route.points[index + 1];
+          const midpoint: [number, number] = [(lat + next[0]) / 2, (lng + next[1]) / 2];
+          const km = Math.round(distanceKm([lat, lng], next));
+          L.marker(midpoint, { interactive: false, icon: L.divIcon({ className: "segment-label", html: `<span>→ ${km} km</span>`, iconSize: [58, 18] }) }).addTo(routeLayer);
+        });
+      });
+
+      walkingRoutes.forEach((walk) => {
+        const routeLayer = dayRouteLayersRef.current[walk.day];
+        if (!routeLayer) return;
+        L.polyline(walk.points.map(([lat, lng]) => [lat, lng] as [number, number]), { color: "#7b3fc6", weight: 4, opacity: .9, dashArray: "3 7" })
+          .bindTooltip(`🥾 ${walk.title} · TRAMO A PIE`)
+          .addTo(routeLayer);
       });
 
       stops.forEach((stop, index) => {
@@ -1141,6 +1182,7 @@ export default function Home() {
             <span>42°N / 8°W</span>
             <strong>PORTUGAL<br />NORTE</strong>
           </div>
+          <div className="transport-legend"><span><i /> COCHE</span><span><i /> A PIE</span><small>Las flechas muestran dirección y distancia aproximada en línea recta.</small></div>
           <div className="legend">
             {bases.map((base) => (
               <button key={base.id} onClick={() => setActiveBase(base.id)}>
@@ -1154,9 +1196,12 @@ export default function Home() {
         <aside className="route-panel">
           <div className="route-head">
             <p className="eyebrow">GUÍA DE VIAJE</p>
-            <h2>{activeSection === "days" ? "RUTA POR DÍAS" : activeSection === "guide" ? "GUÍA PRÁCTICA" : activeSection === "events" ? "FIESTAS" : activeSection === "food" ? "QUÉ COMER" : activeSection === "walks" ? "RUTAS A PIE" : activeSection === "explore" ? "EXPLORAR" : activeSection === "campings" ? "CAMPINGS" : activeSection === "decide" ? "DECIDIR" : "MODO VIAJE"}</h2>
+            <h2>{activeSection === "today" ? "HOY" : activeSection === "days" ? "RUTA POR DÍAS" : activeSection === "discoverHub" ? "DESCUBRIR" : activeSection === "planHub" ? "PLANIFICAR" : activeSection === "guide" ? "GUÍA PRÁCTICA" : activeSection === "events" ? "FIESTAS" : activeSection === "food" ? "QUÉ COMER" : activeSection === "walks" ? "RUTAS A PIE" : activeSection === "explore" ? "EXPLORAR" : activeSection === "campings" ? "CAMPINGS" : activeSection === "decide" ? "DECIDIR" : "MI VIAJE"}</h2>
             <p>
+              {activeSection === "today" && "Plan operativo: jornada, previsión, agenda compatible, comprobaciones oficiales, alternativas y aparcamiento."}
               {activeSection === "days" && "Las líneas indican la secuencia. Abre cada jornada para obtener el recorrido por carretera."}
+              {activeSection === "discoverHub" && "Rutas, playas, pozas, gastronomía, museos y agenda desde un único punto."}
+              {activeSection === "planHub" && "Guía editorial, comparativas y herramientas para personalizar el viaje."}
               {activeSection === "guide" && "Selección editorial para decidir qué hacer, qué eliminar y cómo adaptar cada jornada a agosto, lluvia o cansancio."}
               {activeSection === "events" && "Agenda cultural integrada en las fechas y bases del viaje. Los puntos rosas aparecen también en el mapa."}
               {activeSection === "food" && "Platos populares organizados por cada camping base."}
@@ -1168,16 +1213,31 @@ export default function Home() {
             </p>
           </div>
           <div className="guide-tabs" role="tablist" aria-label="Contenido de la guía">
+            <button className={activeSection === "today" ? "active" : ""} onClick={() => setActiveSection("today")}>HOY</button>
             <button className={activeSection === "days" ? "active" : ""} onClick={() => setActiveSection("days")}>DÍAS</button>
-            <button className={activeSection === "guide" ? "active" : ""} onClick={() => setActiveSection("guide")}>GUÍA</button>
-            <button className={activeSection === "events" ? "active" : ""} onClick={() => setActiveSection("events")}>FIESTAS</button>
-            <button className={activeSection === "food" ? "active" : ""} onClick={() => setActiveSection("food")}>COMER</button>
-            <button className={activeSection === "walks" ? "active" : ""} onClick={() => setActiveSection("walks")}>RUTAS</button>
-            <button className={activeSection === "explore" ? "active" : ""} onClick={() => setActiveSection("explore")}>EXPLORAR</button>
-            <button className={activeSection === "campings" ? "active" : ""} onClick={() => setActiveSection("campings")}>CAMPINGS</button>
-            <button className={activeSection === "decide" ? "active" : ""} onClick={() => setActiveSection("decide")}>DECIDIR</button>
-            <button className={activeSection === "offline" ? "active" : ""} onClick={() => setActiveSection("offline")}>VIAJE</button>
+            <button className={["discoverHub", "walks", "explore", "food", "events"].includes(activeSection) ? "active" : ""} onClick={() => setActiveSection("discoverHub")}>DESCUBRIR</button>
+            <button className={["planHub", "guide", "decide", "campings"].includes(activeSection) ? "active" : ""} onClick={() => setActiveSection("planHub")}>PLANIFICAR</button>
+            <button className={activeSection === "offline" ? "active" : ""} onClick={() => setActiveSection("offline")}>MI VIAJE</button>
           </div>
+
+          {activeSection === "today" && <TodayTools weather={weather} openDay={(day) => { setActiveDay(day); setActiveSection("days"); }} openSection={setActiveSection} />}
+
+          {activeSection === "discoverHub" && (
+            <div className="section-hub">
+              <button onClick={() => setActiveSection("walks")}><span>01</span><strong>RUTAS</strong><p>Senderos fáciles y medios, perfiles, atajos y tracks.</p></button>
+              <button onClick={() => setActiveSection("explore")}><span>02</span><strong>LUGARES</strong><p>Playas, pozas, museos, patrimonio, surf y fotografía.</p></button>
+              <button onClick={() => setActiveSection("food")}><span>03</span><strong>COMER</strong><p>Platos, mercados, restaurantes y opciones para el camping.</p></button>
+              <button onClick={() => setActiveSection("events")}><span>04</span><strong>AGENDA</strong><p>Fiestas, conciertos y eventos compatibles con la ruta.</p></button>
+            </div>
+          )}
+
+          {activeSection === "planHub" && (
+            <div className="section-hub planning">
+              <button onClick={() => setActiveSection("guide")}><span>01</span><strong>GUÍA PRÁCTICA</strong><p>Decisiones, comparativas, fotografía, patrimonio y planes nocturnos.</p></button>
+              <button onClick={() => setActiveSection("decide")}><span>02</span><strong>ASISTENTE</strong><p>Distancias, combinaciones y recomendación según preferencias.</p></button>
+              <button onClick={() => setActiveSection("campings")}><span>03</span><strong>CAMPINGS</strong><p>Bases, servicios, teléfonos, reservas y alternativas.</p></button>
+            </div>
+          )}
 
           {activeSection === "days" && (
             <>
@@ -1235,6 +1295,15 @@ export default function Home() {
                             <small>PLAN DEL DÍA</small>
                             <ol>{plan.schedule.map((item) => <li key={item}>{item}</li>)}</ol>
                           </section>
+                          {events.filter((event) => eventMatchesDay(event.date, Number(route.day))).filter((event) => distanceKm(bases[dayOperations[route.day].base - 1].center, event.coords) < 85).slice(0, 3).length > 0 && (
+                            <section className="day-events">
+                              <small>AGENDA COMPATIBLE</small>
+                              {events.filter((event) => eventMatchesDay(event.date, Number(route.day))).filter((event) => distanceKm(bases[dayOperations[route.day].base - 1].center, event.coords) < 85).slice(0, 3).map((event) => (
+                                <article key={`${event.date}-${event.title}`}><div><b>{event.time}</b><strong>{event.title}</strong><span>{event.place}</span></div><a href={event.url} target="_blank" rel="noreferrer">PROGRAMA ↗</a><button onClick={() => addToPlan(event.title, route.day)}>+ PLAN</button></article>
+                              ))}
+                              <button className="all-events" onClick={() => setActiveSection("events")}>VER TODA LA AGENDA →</button>
+                            </section>
+                          )}
                           <section className={`pace-plan ${travelPace}`}>
                             <small>RITMO {travelPace.toUpperCase()}</small>
                             <p>{plan.pace[travelPace]}</p>
@@ -1641,6 +1710,7 @@ export default function Home() {
                       <label>VALORACIÓN<select value={entry.rating} onChange={(event) => updateDiary(name, { rating: Number(event.target.value) })}><option value={0}>Sin valorar</option>{[1,2,3,4,5].map((value) => <option value={value} key={value}>{value} / 5</option>)}</select></label>
                       <label>QUÉ COMIMOS<input value={entry.food} onChange={(event) => updateDiary(name, { food: event.target.value })} /></label>
                       <label>GASTO APROXIMADO<input value={entry.expense} onChange={(event) => updateDiary(name, { expense: event.target.value })} placeholder="€" /></label>
+                      <div className="diary-stamp"><b>FECHA Y CONDICIONES</b><span>{entry.visitedAt || "Sin registrar"}<br />{entry.weather || "Sin datos meteorológicos"}</span><button onClick={() => stampDiary(name)}>REGISTRAR AHORA</button></div>
                       <label className="recommend-check"><input type="checkbox" checked={entry.recommended} onChange={(event) => updateDiary(name, { recommended: event.target.checked })} /> Lo recomendaríamos</label>
                     </div>
                   </details>;
@@ -1652,6 +1722,13 @@ export default function Home() {
           )}
         </aside>
       </section>
+      <nav className="mobile-trip-nav" aria-label="Navegación móvil">
+        <button className={activeSection === "today" ? "active" : ""} onClick={() => setActiveSection("today")}><b>●</b><span>HOY</span></button>
+        <button onClick={() => document.getElementById("map")?.scrollIntoView({ behavior: "smooth", block: "start" })}><b>⌖</b><span>MAPA</span></button>
+        <button className={activeSection === "days" ? "active" : ""} onClick={() => setActiveSection("days")}><b>10</b><span>DÍAS</span></button>
+        <button className={["discoverHub", "walks", "explore", "food", "events"].includes(activeSection) ? "active" : ""} onClick={() => setActiveSection("discoverHub")}><b>+</b><span>DESCUBRIR</span></button>
+        <button className={activeSection === "offline" ? "active" : ""} onClick={() => setActiveSection("offline")}><b>♥</b><span>VIAJE</span></button>
+      </nav>
     </main>
   );
 }
