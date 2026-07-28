@@ -103,9 +103,9 @@ const dayOperations: Record<string, {
   warnings: string[];
   priority: "IMPRESCINDIBLE" | "MUY RECOMENDABLE" | "SI QUEDA TIEMPO" | "ALTERNATIVA";
 }> = {
-  "01": { base: 1, parking: "Paradas de servicio en ruta; llegada dentro del camping.", parkingMinutes: 10, walkMinutes: 35, visitMinutes: 60, restMinutes: 45, lastExit: "17:00", road: "Autovía casi todo el trayecto; último tramo rural.", toll: "Revisar peajes electrónicos portugueses si se abandona la A-52/A-24.", border: "Entrada España → Portugal.", warnings: ["Trayecto largo", "Montar la tienda con luz"] , priority: "IMPRESCINDIBLE" },
-  "02": { base: 1, parking: "Soajo: aparcamiento junto a la entrada del pueblo. Lindoso: junto al castillo.", parkingMinutes: 20, walkMinutes: 150, visitMinutes: 150, restMinutes: 45, lastExit: "18:30", road: "Carreteras estrechas, curvas y tráfico lento dentro del parque.", toll: "Sin peajes previstos.", border: "Sin cruce fronterizo.", warnings: ["Aparcamiento pequeño: antes de las 10:00", "Cobertura irregular", "Llevar agua", "Roca resbaladiza", "Evitar pozas tras lluvia"], priority: "IMPRESCINDIBLE" },
-  "03": { base: 1, parking: "Sistelo: plazas limitadas en la entrada. Arcos: aparcamientos junto al río.", parkingMinutes: 20, walkMinutes: 180, visitMinutes: 120, restMinutes: 45, lastExit: "18:00", road: "Acceso lento a Sistelo; calcular más tiempo del indicado por distancia.", toll: "Sin peajes previstos.", border: "Sin cruce fronterizo.", warnings: ["Pasarelas resbaladizas con lluvia", "Llevar agua", "Cobertura irregular en el valle"], priority: "MUY RECOMENDABLE" },
+  "01": { base: 1, parking: "Zamora: aparcamientos del casco histórico. Miranda: zona exterior del centro. Bragança: alojamiento o entorno de la ciudadela.", parkingMinutes: 35, walkMinutes: 150, visitMinutes: 240, restMinutes: 60, lastExit: "17:45", road: "Autovía hasta Zamora; después carreteras convencionales hacia Miranda y Bragança.", toll: "Sin peaje previsto por la ruta recomendada; confirmar antes de salir.", border: "Entrada España → Portugal entre Miranda do Douro y Bragança.", warnings: ["Salir antes de las 08:00", "Jornada de casi 6 h al volante", "No añadir más paradas", "Reservar hotel en Bragança"], priority: "IMPRESCINDIBLE" },
+  "02": { base: 1, parking: "Bragança: entorno de la ciudadela. Lima Escape: dentro del camping.", parkingMinutes: 25, walkMinutes: 90, visitMinutes: 150, restMinutes: 45, lastExit: "14:30", road: "Bragança → Lima Escape: etapa transversal de unas 3 h por carreteras interiores.", toll: "La alternativa rápida puede utilizar vías con peaje electrónico.", border: "Sin cruce fronterizo.", warnings: ["No salir tarde de Bragança", "Montar la tienda con luz", "No intentar añadir Soajo este día"], priority: "IMPRESCINDIBLE" },
+  "03": { base: 1, parking: "Soajo: aparcamiento junto a la entrada del pueblo. Lindoso: junto al castillo.", parkingMinutes: 20, walkMinutes: 150, visitMinutes: 150, restMinutes: 45, lastExit: "18:30", road: "Carreteras estrechas, curvas y tráfico lento dentro de Peneda–Gerês.", toll: "Sin peajes previstos.", border: "Sin cruce fronterizo.", warnings: ["Aparcamiento pequeño: antes de las 10:00", "Cobertura irregular", "Llevar agua", "Roca resbaladiza", "Evitar pozas tras lluvia"], priority: "IMPRESCINDIBLE" },
   "04": { base: 2, parking: "Bom Jesus: aparcamiento superior o funicular. Braga: parkings urbanos.", parkingMinutes: 30, walkMinutes: 150, visitMinutes: 210, restMinutes: 60, lastExit: "17:30", road: "Tramo urbano lento en Braga y entrada a Viana.", toll: "La ruta rápida puede incluir autopista de peaje.", border: "Sin cruce fronterizo.", warnings: ["Día de desmontaje y montaje", "Reservar margen para tráfico urbano"], priority: "IMPRESCINDIBLE" },
   "05": { base: 2, parking: "Viana: parking Campo d’Agonia. Santa Luzia: aparcamiento superior limitado.", parkingMinutes: 25, walkMinutes: 120, visitMinutes: 240, restMinutes: 60, lastExit: "19:30", road: "Desplazamientos urbanos cortos.", toll: "Sin peajes previstos.", border: "Sin cruce fronterizo.", warnings: ["Santa Luzia pierde interés con niebla", "Cabedelo expuesta al viento"], priority: "MUY RECOMENDABLE" },
   "06": { base: 2, parking: "Afife y Moledo: aparcamientos de playa; Caminha: zona de la estación.", parkingMinutes: 35, walkMinutes: 90, visitMinutes: 300, restMinutes: 60, lastExit: "20:00", road: "N13 costera con tráfico de agosto; evitar encadenar demasiadas playas.", toll: "Sin peajes previstos.", border: "Sin cruce fronterizo.", warnings: ["Playas expuestas al viento", "Corrientes atlánticas", "Restaurante: reservar para cenar"], priority: "IMPRESCINDIBLE" },
@@ -131,10 +131,10 @@ const bases = [
     id: 1,
     short: "MONTAÑA",
     title: "Lima Escape",
-    dates: "1–4 AGO",
+    dates: "2–4 AGO",
     color: "#e5482c",
     center: [41.824395, -8.318062] as [number, number],
-    detail: "Peneda–Gerês · 3 noches",
+    detail: "Peneda–Gerês · 2 noches",
   },
   {
     id: 2,
@@ -149,20 +149,23 @@ const bases = [
     id: 3,
     short: "FRONTERA",
     title: "Camping Santa Tecla",
-    dates: "7–10 AGO",
+    dates: "7–10/12 AGO",
     color: "#2f7d5b",
     center: [41.8897, -8.8464] as [number, number],
-    detail: "A Guarda · 3 noches",
+    detail: "A Guarda · 3–5 noches, regreso flexible",
   },
 ] as const;
 
 const stops: Stop[] = [
   { name: "Vitoria–Gasteiz", day: "Día 1", date: "1 AGO", base: 0, coords: [42.8467, -2.6716], note: "Salida y regreso del viaje", kind: "town" },
-  { name: "Lima Escape", day: "Días 1–3", date: "1–4 AGO", base: 1, coords: [41.824395, -8.318062], note: "Primera base: bosque, río Lima y Peneda–Gerês", kind: "camping" },
-  { name: "Soajo", day: "Día 2", date: "2 AGO", base: 1, coords: [41.8721, -8.2634], note: "Espigueiros, aldea de piedra y miradores", kind: "history" },
-  { name: "Lindoso", day: "Día 2", date: "2 AGO", base: 1, coords: [41.8662, -8.1998], note: "Castillo, era comunal y más de cincuenta espigueiros", kind: "history" },
-  { name: "Sistelo", day: "Día 3", date: "3 AGO", base: 1, coords: [41.9733, -8.3746], note: "Senderos, bancales y Ecovia do Vez", kind: "nature" },
-  { name: "Arcos de Valdevez", day: "Día 3", date: "3 AGO", base: 1, coords: [41.8467, -8.4191], note: "Paseo junto al Vez y baño fluvial", kind: "town" },
+  { name: "Zamora", day: "Día 1", date: "1 AGO", base: 0, coords: [41.5035, -5.7446], note: "Primera parada: románico, castillo y miradores del Duero", kind: "history" },
+  { name: "Miranda do Douro", day: "Día 1", date: "1 AGO", base: 0, coords: [41.4966, -6.2737], note: "Centro histórico, catedral y miradores del Douro Internacional", kind: "town" },
+  { name: "Bragança", day: "Días 1–2", date: "1–2 AGO", base: 0, coords: [41.8061, -6.7567], note: "Primera noche en hotel u hostal; ciudadela, castillo y Domus Municipalis", kind: "history" },
+  { name: "Lima Escape", day: "Días 2–3", date: "2–4 AGO", base: 1, coords: [41.824395, -8.318062], note: "Base interior durante dos noches: bosque, río Lima y Peneda–Gerês", kind: "camping" },
+  { name: "Soajo", day: "Día 3", date: "3 AGO", base: 1, coords: [41.8721, -8.2634], note: "Espigueiros, aldea de piedra y miradores", kind: "history" },
+  { name: "Lindoso", day: "Día 3", date: "3 AGO", base: 1, coords: [41.8662, -8.1998], note: "Castillo, era comunal y más de cincuenta espigueiros", kind: "history" },
+  { name: "Sistelo", day: "Alternativa", date: "2–4 AGO", base: 1, coords: [41.9733, -8.3746], note: "Excursión opcional si se amplía la estancia interior", kind: "nature" },
+  { name: "Arcos de Valdevez", day: "Alternativa", date: "2–4 AGO", base: 1, coords: [41.8467, -8.4191], note: "Paseo y baño fluvial opcionales desde Lima Escape", kind: "town" },
   { name: "Bom Jesus do Monte", day: "Día 4", date: "4 AGO", base: 1, coords: [41.5547, -8.3771], note: "Santuario, escalinata y funicular hidráulico", kind: "history" },
   { name: "Braga", day: "Día 4", date: "4 AGO", base: 1, coords: [41.5518, -8.4229], note: "Sé, centro histórico y gastronomía del Minho", kind: "town" },
   { name: "INATEL Cabedelo", day: "Días 4–6", date: "4–7 AGO", base: 2, coords: [41.678611, -8.823056], note: "Segunda base con acceso directo a la playa", kind: "camping" },
@@ -174,7 +177,7 @@ const stops: Stop[] = [
   { name: "Caminha", day: "Día 6", date: "6 AGO", base: 2, coords: [41.8753, -8.8387], note: "Casco histórico y desembocadura del Miño", kind: "town" },
   { name: "Valença do Minho", day: "Día 7", date: "7 AGO", base: 3, coords: [42.0308, -8.6459], note: "Fortaleza fronteriza y murallas", kind: "history" },
   { name: "Tui", day: "Día 7", date: "7 AGO", base: 3, coords: [42.0472, -8.6444], note: "Catedral, calles medievales y río Miño", kind: "town" },
-  { name: "Camping Santa Tecla", day: "Días 7–9", date: "7–10 AGO", base: 3, coords: [41.8897, -8.8464], note: "Tercera base junto al estuario del Miño", kind: "camping" },
+  { name: "Camping Santa Tecla", day: "Días 7–10/12", date: "7–12 AGO", base: 3, coords: [41.8897, -8.8464], note: "Tercera base junto al estuario del Miño; salida flexible", kind: "camping" },
   { name: "Monte Santa Trega", day: "Día 8", date: "8 AGO", base: 3, coords: [41.8925, -8.8697], note: "Castro y miradores sobre Portugal y el Atlántico", kind: "history" },
   { name: "A Guarda", day: "Día 8", date: "8 AGO", base: 3, coords: [41.9012, -8.8747], note: "Puerto pesquero, cetáreas y cocina marinera", kind: "town" },
   { name: "Monasterio de Oia", day: "Día 9", date: "9 AGO", base: 3, coords: [42.0024, -8.8767], note: "Monasterio cisterciense frente al océano", kind: "history" },
@@ -184,9 +187,9 @@ const stops: Stop[] = [
 ];
 
 const dayRoutes = [
-  { day: "01", title: "Vitoria → Gerês", color: "#20201d", points: [[42.8467, -2.6716], [41.824395, -8.318062]] },
-  { day: "02", title: "Soajo + Lindoso", color: "#e5482c", points: [[41.824395, -8.318062], [41.8721, -8.2634], [41.8662, -8.1998], [41.824395, -8.318062]] },
-  { day: "03", title: "Sistelo + Arcos", color: "#e5482c", points: [[41.824395, -8.318062], [41.9733, -8.3746], [41.8467, -8.4191], [41.824395, -8.318062]] },
+  { day: "01", title: "Zamora → Miranda → Bragança", color: "#20201d", points: [[42.8467, -2.6716], [41.5035, -5.7446], [41.4966, -6.2737], [41.8061, -6.7567]] },
+  { day: "02", title: "Bragança → Lima Escape", color: "#c06a2c", points: [[41.8061, -6.7567], [41.824395, -8.318062]] },
+  { day: "03", title: "Soajo + Lindoso", color: "#e5482c", points: [[41.824395, -8.318062], [41.8721, -8.2634], [41.8662, -8.1998], [41.824395, -8.318062]] },
   { day: "04", title: "Braga → Cabedelo", color: "#8c3d27", points: [[41.824395, -8.318062], [41.5547, -8.3771], [41.5518, -8.4229], [41.678611, -8.823056]] },
   { day: "05", title: "Viana + Santa Luzia", color: "#1779a8", points: [[41.678611, -8.823056], [41.6932, -8.8329], [41.7044, -8.8342], [41.678611, -8.823056]] },
   { day: "06", title: "Costa norte", color: "#1779a8", points: [[41.678611, -8.823056], [41.7812, -8.8725], [41.8158, -8.8695], [41.8496, -8.8664], [41.8753, -8.8387], [41.678611, -8.823056]] },
@@ -197,8 +200,8 @@ const dayRoutes = [
 ] as const;
 
 const walkingRoutes = [
-  { day: "02", title: "POZAS DE SOAJO", points: [[41.8721, -8.2634], [41.8755, -8.2692]] },
-  { day: "03", title: "ECOVIA DO VEZ", points: [[41.9701, -8.4067], [41.9733, -8.3746]] },
+  { day: "01", title: "ZAMORA + MIRANDA A PIE", points: [[41.5035, -5.7446], [41.5022, -5.7492]] },
+  { day: "03", title: "POZAS DE SOAJO", points: [[41.8721, -8.2634], [41.8755, -8.2692]] },
   { day: "05", title: "VIANA A PIE", points: [[41.6932, -8.8329], [41.7044, -8.8342]] },
   { day: "08", title: "CAMIÑOS DO TREGA", points: [[41.9012, -8.8747], [41.8925, -8.8697]] },
   { day: "09", title: "POZAS DE MOUGÁS", points: [[42.0558, -8.8492], [42.0581, -8.8662]] },
@@ -212,28 +215,28 @@ function eventMatchesDay(date: string, day: number) {
 
 const dailyPlans = [
   {
-    day: "01", date: "SÁB · 1 AGO", drive: "≈ 620 KM · 6 H 15", base: "LIMA ESCAPE · NOCHE 1/3",
-    schedule: ["Salida temprana de Vitoria–Gasteiz", "Parada larga para comer durante el trayecto", "Llegada, montaje y paseo junto al río Lima"],
-    walk: "Paseo de aclimatación por el entorno del camping · 30–45 min · fácil",
-    food: "Cena sencilla en el camping: caldo verde, broa y producto local.",
-    rain: "Llegar sin prisas, hacer la compra y reservar energía para Peneda–Gerês.",
-    pace: { tranquilo: "Viaje directo, montaje y descanso.", normal: "Añadir el paseo corto junto al Lima.", completo: "Parar en Ponte de Lima antes de llegar al camping." },
+    day: "01", date: "SÁB · 1 AGO", drive: "≈ 465 KM · 5 H 50", base: "HOTEL / HOSTAL EN BRAGANÇA",
+    schedule: ["Salida de Vitoria antes de las 08:00", "Zamora: castillo, catedral y miradores del Duero", "Miranda do Douro: centro histórico y miradores", "Llegada a Bragança, alojamiento y cena"],
+    walk: "Zamora y Miranda en dos paseos urbanos · 4–6 km totales · fácil",
+    food: "Comida rápida o menú en Zamora; en Bragança, posta mirandesa, alheira o carne de porco bísaro.",
+    rain: "Reducir Zamora a catedral y casco histórico; en Miranda priorizar la catedral y llegar antes a Bragança.",
+    pace: { tranquilo: "Parada principal en Zamora y breve mirador en Miranda.", normal: "Dos horas en Zamora, visita breve a Miranda y paseo nocturno en Bragança.", completo: "Visitas amplias a Zamora y Miranda; exige salir muy temprano y controlar estrictamente los horarios." },
   },
   {
-    day: "02", date: "DOM · 2 AGO", drive: "≈ 80 KM · 2 H", base: "LIMA ESCAPE · NOCHE 2/3",
-    schedule: ["Espigueiros y aldea de Soajo", "Ruta o baño en las pozas", "Castillo y espigueiros de Lindoso", "Noite do Folclore en Arcos, opcional"],
+    day: "02", date: "DOM · 2 AGO", drive: "≈ 205 KM · 3 H", base: "LIMA ESCAPE · NOCHE 1/2",
+    schedule: ["Ciudadela, castillo y Domus Municipalis de Bragança", "Comida temprana y salida antes de las 14:30", "Trayecto hacia Entre Ambos-os-Rios", "Llegada, montaje y paseo junto al río Lima"],
+    walk: "Ciudadela de Bragança · 2–3 km fácil + paseo de aclimatación en el camping",
+    food: "Alheira de Mirandela, posta o menú transmontano; comprar algo sencillo para cenar en el camping.",
+    rain: "Museo Ibérico de la Máscara, castillo y salida temprana hacia Lima Escape.",
+    pace: { tranquilo: "Desayuno, paseo corto por la ciudadela y traslado directo.", normal: "Castillo, ciudadela, comida temprana y llegada con luz.", completo: "Añadir el museo de la máscara, sin retrasar la salida más allá de las 14:30." },
+  },
+  {
+    day: "03", date: "LUN · 3 AGO", drive: "≈ 36 KM · 45 MIN DE MARCHA; RESERVAR 1 H 15", base: "LIMA ESCAPE · NOCHE 2/2",
+    schedule: ["Espigueiros y aldea de Soajo", "Ruta o baño en las pozas", "Castillo y espigueiros de Lindoso", "Regreso tranquilo a Lima Escape"],
     walk: "Elegir: Poço Negro · 2 km fácil / ruta completa de las pozas · 11,95 km media",
     food: "Cachena da Peneda o cabrito assado; para pícnic, broa, queso y fruta.",
-    rain: "Soajo y Lindoso en visitas cortas; sustituir las pozas por el castillo y cafés de Arcos.",
+    rain: "Soajo y Lindoso en visitas cortas; sustituir las pozas por el castillo y los centros de interpretación.",
     pace: { tranquilo: "Espigueiros de Soajo, Poço Negro y regreso.", normal: "Soajo, baño y conjunto histórico de Lindoso.", completo: "Ruta circular de las pozas y Lindoso; empezar muy temprano." },
-  },
-  {
-    day: "03", date: "LUN · 3 AGO", drive: "≈ 110 KM · 2 H 20", base: "LIMA ESCAPE · NOCHE 3/3",
-    schedule: ["Sistelo y sus bancales", "Tramo de la Ecovia do Vez", "Baño en Praia Fluvial da Valeta", "Cantares ao Desafio a las 22:00"],
-    walk: "Ecovia Vilela → Sistelo · 10,5 km fácil; versión corta por las Lagoas do Vez · 4 km",
-    food: "Arroz de sarrabulho o rojões à minhota en Arcos de Valdevez.",
-    rain: "Centro de Arcos, Paço de Giela y comida larga; evitar pasarelas si están resbaladizas.",
-    pace: { tranquilo: "Miradores de Sistelo y baño en Valeta.", normal: "Lagoas do Vez, Sistelo y Arcos.", completo: "Ecovia Vilela–Sistelo y fiesta nocturna en Arcos." },
   },
   {
     day: "04", date: "MAR · 4 AGO", drive: "≈ 125 KM · 2 H 15", base: "TRASLADO A INATEL CABEDELO",
@@ -284,12 +287,12 @@ const dailyPlans = [
     pace: { tranquilo: "Oia, Cabo Silleiro y Baiona.", normal: "Oia, pozas de Mougás, cabo y Baiona.", completo: "Ruta completa de las pozas y vuelta a pie a la fortaleza de Monterreal." },
   },
   {
-    day: "10", date: "LUN · 10 AGO", drive: "≈ 650 KM · 6 H 30", base: "REGRESO A VITORIA–GASTEIZ",
-    schedule: ["Desmontar temprano", "Desayuno y últimas compras", "Regreso con una parada larga y otra breve"],
-    walk: "Paseo corto por el puerto o Praia do Muíño antes de salir, solo si el horario lo permite",
-    food: "Comprar empanada, rosca de yema y conservas para el trayecto.",
-    rain: "Salida directa y paradas de carretera bajo techo.",
-    pace: { tranquilo: "Desmontar y regresar directamente.", normal: "Desayuno en A Guarda y regreso.", completo: "Paseo corto por Praia do Muíño antes de emprender el viaje." },
+    day: "10", date: "LUN · 10 AGO", drive: "0–650 KM · FECHA ABIERTA", base: "DECIDIR: REGRESO O NOCHE EXTRA",
+    schedule: ["Comprobar tiempo, cansancio y disponibilidad del camping", "Opción A: desmontar temprano y volver a Vitoria", "Opción B: conservar la parcela y dedicar el día a playa, Caminha, Baiona o Vigo", "Si se amplía: fijar regreso para el 11 o 12"],
+    walk: "Plan flexible: Praia do Muíño, paseo de A Guarda o jornada de descanso sin ruta",
+    food: "Última comida marinera o empanada y conservas para el trayecto.",
+    rain: "Regreso directo; o día cultural en Vigo, Tui o Baiona si se prolonga la estancia.",
+    pace: { tranquilo: "Mantener una noche extra y descansar.", normal: "Excursión corta y regreso el día 11.", completo: "Ampliar hasta el 12 con Vigo, Ribeira Sacra o una etapa intermedia." },
   },
 ] as const;
 
@@ -624,7 +627,7 @@ const routingServers = [
 ];
 
 async function fetchRoadRoute(day: string, points: readonly (readonly number[])[]): Promise<RoadRoute | null> {
-  const cacheKey = `bidai-road-route-v2-${day}`;
+  const cacheKey = `bidai-road-route-v3-${day}`;
   try {
     const cached = localStorage.getItem(cacheKey);
     if (cached) return JSON.parse(cached) as RoadRoute;
@@ -1021,7 +1024,7 @@ export default function Home() {
       if (cancelled || !mapEl.current) return;
 
       const map = L.map(mapEl.current, { zoomControl: false, minZoom: 5 });
-      map.fitBounds([[41.48, -8.99], [42.2, -8.05]], { padding: [25, 25] });
+      map.fitBounds([[41.35, -9.05], [42.95, -2.55]], { padding: [25, 25] });
       L.control.zoom({ position: "bottomright" }).addTo(map);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
         attribution: "© OpenStreetMap contributors",
@@ -1356,6 +1359,12 @@ export default function Home() {
 
           {activeSection === "days" && (
             <>
+              <div className="pace-picker">
+                <small>ITINERARIO ACTUALIZADO · 10–12 DÍAS</small>
+                <p><b>1 AGO:</b> Vitoria → Zamora → Miranda do Douro → noche en Bragança.</p>
+                <p><b>2–4 AGO:</b> Lima Escape, dos noches y salida el día 4.</p>
+                <p><b>10 AGO:</b> decisión abierta: regreso, noche adicional o extensión hasta el 12.</p>
+              </div>
               <div className="pace-picker" aria-label="Intensidad del planning">
                 <small>RITMO DEL VIAJE</small>
                 <div>
