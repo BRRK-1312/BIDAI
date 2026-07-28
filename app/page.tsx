@@ -642,7 +642,8 @@ const routingServers = [
 ];
 
 async function fetchRoadRoute(day: string, points: readonly (readonly number[])[]): Promise<RoadRoute | null> {
-  const cacheKey = `bidai-road-route-v3-${day}`;
+  const routeSignature = points.map(([lat, lng]) => `${lat.toFixed(5)},${lng.toFixed(5)}`).join("|");
+  const cacheKey = `bidai-road-route-v4-${day}-${routeSignature}`;
   try {
     const cached = localStorage.getItem(cacheKey);
     if (cached) return JSON.parse(cached) as RoadRoute;
