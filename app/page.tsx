@@ -263,11 +263,17 @@ const dailyPlans = [
 ] as const;
 
 const events: EventItem[] = [
+  { date: "1–10 AGO", place: "PONTE DE LIMA", title: "Festival Internacional de Jardines", time: "HORARIO DE VISITA", note: "Doce jardines efímeros internacionales. Plan tranquilo de 60–90 minutos para combinar con el centro histórico o el regreso desde Braga. Incluido desde la agenda Visit Portugal aportada.", coords: [41.7623, -8.5865], url: "https://festivaldejardins.cm-pontedelima.pt/" },
+  { date: "1–10 AGO", place: "VILA NOVA DE CERVEIRA", title: "Bienal Internacional de Arte de Cerveira", time: "HORARIO DE EXPOSICIONES", note: "Arte contemporáneo, talleres, escultura y exposiciones repartidas por la villa. Buena alternativa cultural desde Cabedelo o Santa Tecla.", priority: true, coords: [41.9413, -8.7426], url: "https://bienaldecerveira.pt/" },
+  { date: "1 AGO", place: "VILA NOVA DE CERVEIRA", title: "Fiestas de São Sebastião · jornada final", time: "PROGRAMA VARIABLE", note: "Último día de las fiestas municipales, con música, gastronomía, folclore y posibles fuegos. Solo encaja si se acepta un desvío el primer día.", coords: [41.9413, -8.7426], url: "https://www.cm-vncerveira.pt/" },
   { date: "2 AGO", place: "ARCOS DE VALDEVEZ", title: "Noite do Folclore", time: "21:30", note: "Seis ranchos folclóricos. Encaja al volver de Soajo y Lindoso.", coords: [41.8467, -8.4191], url: lapaProgram },
   { date: "3 AGO", place: "ARCOS DE VALDEVEZ", title: "Cantares ao Desafio", time: "22:00", note: "Tradición oral improvisada después de la ruta de Sistelo.", priority: true, coords: [41.8467, -8.4191], url: "https://www.cmav.pt/informar/agenda-de-eventos/agenda-cultural/evento/festas-de-nossa-senhora-da-lapa-dia-dos-cantares-ao-desafio" },
   { date: "4 AGO", place: "ARCOS DE VALDEVEZ", title: "Noite do Emigrante", time: "21:30", note: "Alternativa nocturna tras Braga; supone retroceder hacia el interior.", coords: [41.8467, -8.4191], url: lapaProgram },
   { date: "5 AGO", place: "ARCOS DE VALDEVEZ", title: "Folk O Mundo a Dançar", time: "22:00", note: "Gala internacional gratuita a unos 50 minutos de Cabedelo.", priority: true, coords: [41.8467, -8.4191], url: "https://www.cmav.pt/informar/agenda-de-eventos/agenda-cultural/evento/festas-de-nossa-senhora-da-lapa-dia-do-mundo-a-dancar" },
   { date: "6 AGO", place: "MONÇÃO", title: "Desfile internacional de folclore", time: "TARDE", note: "Alternativa cultural al día completo de playas.", coords: [42.0789, -8.4808], url: "https://www.cm-moncao.pt/pt/menu/1586/agenda-cultural.aspx" },
+  { date: "6–8 AGO", place: "VIANA DO CASTELO", title: "NEOPOP Festival · 20 aniversario", time: "TARDE–NOCHE", note: "Festival internacional de música electrónica junto al mar. Prever ruido, ocupación alta, reservas y cortes cerca del Forte de Santiago da Barra.", priority: true, coords: [41.6912, -8.8387], url: "https://neopopfestival.com/pt" },
+  { date: "6–8 AGO", place: "VILA PRAIA DE ÂNCORA", title: "SonicBlast Fest", time: "TARDE–NOCHE", note: "Festival de rock, stoner y música pesada junto a Praia do Caldeirão. Puede combinarse con el día de Afife y Âncora; comprobar entradas.", coords: [41.8118, -8.8677], url: "https://sonicblastfestival.com/" },
+  { date: "6–10 AGO", place: "TERRAS DE BOURO", title: "Fiestas de Terras de Bouro · São Brás", time: "PROGRAMA VARIABLE", note: "Conciertos, tradición y gastronomía. Es un desvío largo desde la base costera: utilizar solo como alternativa si queréis volver al interior.", coords: [41.7172, -8.3083], url: "https://www.cm-terrasdebouro.pt/" },
   { date: "6–9 AGO", place: "ARCOS DE VALDEVEZ", title: "Ínsua do Vez Summer Sessions", time: "NOCHE", note: "Música electrónica gratuita en el Ecoparque do Vez.", coords: [41.848, -8.416], url: "https://www.cmav.pt/informar/agenda-de-eventos/agenda-cultural" },
   { date: "7 AGO", place: "VALENÇA", title: "Sara Correia · Sons do Minho · Pete Tha Zouk", time: "NOCHE", note: "Conciertos gratuitos junto a la fortaleza; encaja con el traslado a Galicia.", coords: [42.0308, -8.6459], url: valencaProgram },
   { date: "7–9 AGO", place: "CASTELO DO NEIVA", title: "XIII Feira Medieval", time: "TODO EL DÍA", note: "Mercado, recreación, gastronomía y animación histórica.", coords: [41.6215, -8.8025], url: "https://www.cm-viana-castelo.pt/areas-de-atividade/comunicacao/agenda-de-eventos" },
@@ -1305,7 +1311,7 @@ export default function Home() {
                 </article>
                 );
               })}
-              <p className="data-note">Agenda actualizable: “confirmado” significa que existe página o programa 2026; los horarios pequeños pueden cambiar por organización o lluvia. Revisad el enlace oficial 24–48 h antes.</p>
+              <p className="data-note">Agenda ampliada con el PDF de Visit Portugal aportado. “Confirmado” significa que existe página o programa 2026; los horarios pequeños pueden cambiar por organización o lluvia. Revisad el enlace oficial 24–48 h antes.</p>
             </div>
           )}
 
