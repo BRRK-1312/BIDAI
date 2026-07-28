@@ -155,13 +155,23 @@ button { color: inherit; }
 .section-hub strong { display: block; font-size: 18px; }
 .section-hub p { margin: 8px 0 0; font-size: 10px; line-height: 1.45; color: #625e56; }
 .mobile-trip-nav { display: none; }
-.transport-legend { position: absolute; left: 14px; bottom: 15px; z-index: 500; display: flex; align-items: center; gap: 10px; max-width: 310px; padding: 8px 10px; border: 1px solid rgba(32,32,29,.55); background: rgba(244,240,230,.9); backdrop-filter: blur(8px); }
+.transport-legend { position: absolute; left: 18px; bottom: 76px; z-index: 500; display: flex; align-items: center; gap: 10px; max-width: 310px; padding: 8px 10px; border: 1px solid rgba(32,32,29,.55); background: rgba(244,240,230,.94); backdrop-filter: blur(8px); box-shadow: 2px 2px 0 rgba(32,32,29,.16); }
 .transport-legend span { display: flex; align-items: center; gap: 4px; font-size: 7px; font-weight: 900; }
 .transport-legend span i { width: 17px; height: 3px; background: #1779a8; }
 .transport-legend span:nth-child(2) i { background: repeating-linear-gradient(90deg,#7b3fc6 0 4px,transparent 4px 7px); }
 .transport-legend small { font-size: 6px; line-height: 1.25; }
 .segment-label { background: transparent !important; border: 0 !important; }
 .segment-label span { display: inline-block; padding: 3px 5px; border: 1px solid rgba(32,32,29,.45); background: rgba(244,240,230,.88); color: #20201d; font: 800 7px/1 Arial,sans-serif; white-space: nowrap; }
+#map.all-days .segment-label { display: none !important; }
+.fogos-embed { position: absolute; inset: 12px; z-index: 1200; display: grid; grid-template-rows: auto 1fr auto; border: 1px solid var(--ink); background: var(--paper); box-shadow: 7px 7px 0 rgba(32,32,29,.25); }
+.fogos-embed header { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 10px 12px; background: var(--ink); color: var(--paper); }
+.fogos-embed header div { display: grid; gap: 2px; }
+.fogos-embed header b { font-size: 10px; letter-spacing: .08em; }
+.fogos-embed header span { font-size: 7px; color: #cbc5ba; }
+.fogos-embed header button { min-height: 34px; padding: 0 12px; border: 1px solid var(--paper); background: transparent; color: var(--paper); font-size: 8px; font-weight: 900; cursor: pointer; }
+.fogos-embed iframe { width: 100%; height: 100%; min-height: 0; border: 0; }
+.fogos-embed footer { padding: 7px 10px; background: #f0d300; font-size: 7px; font-weight: 800; }
+.fire-live-panel button.open-fogos { grid-column: 1 / -1; background: #e5482c; color: #fff; }
 
 .trip-flex { display: grid; gap: 14px; padding: 16px; border-bottom: 1px solid var(--line); background: #eee9dc; }
 .trip-flex section { border: 1px solid var(--ink); background: #f7f3e9; }
@@ -746,7 +756,9 @@ button { color: inherit; }
   .mobile-trip-nav button.active { background: var(--ink); color: var(--paper); }
   .mobile-trip-nav b { font-size: 13px; line-height: 1; }
   .mobile-trip-nav span { font-size: 6px; font-weight: 900; letter-spacing: .06em; }
-  .transport-legend { left: 8px; right: 8px; bottom: 8px; max-width: none; }
+  .transport-legend { left: 10px; right: auto; bottom: 72px; max-width: calc(100% - 20px); }
+  .fogos-embed { inset: 6px; }
+  .fogos-embed header span { display: none; }
   .today-primary-actions, .status-grid, .parking-card { grid-template-columns: 1fr; }
   .status-grid > *:nth-child(odd), .parking-card p:nth-child(odd) { border-right: 0; }
   .parking-card .coords { grid-column: 1; }
