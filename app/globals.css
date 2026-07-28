@@ -129,6 +129,61 @@ button { color: inherit; }
 .guide-tabs button { height: 42px; border: 0; border-right: 1px solid var(--line); background: transparent; font-size: 8px; font-weight: 900; letter-spacing: .08em; cursor: pointer; }
 .guide-tabs button:last-child { border-right: 0; }
 .guide-tabs button.active { background: var(--ink); color: var(--paper); }
+
+.content-guide { padding-bottom: 40px; }
+.guide-manifesto { padding: 28px 22px; background: var(--ink); color: var(--paper); border-bottom: 1px solid var(--ink); }
+.guide-manifesto small, .guide-block-head small { font-size: 8px; font-weight: 900; letter-spacing: .16em; }
+.guide-manifesto h3 { margin: 8px 0 12px; font-size: clamp(28px, 4vw, 46px); line-height: .9; letter-spacing: -.055em; }
+.guide-manifesto p { max-width: 52ch; font-size: 12px; line-height: 1.55; opacity: .78; }
+.guide-manifesto div { display: flex; gap: 8px; margin-top: 18px; }
+.guide-manifesto button, .guide-link-button { padding: 11px 13px; border: 1px solid currentColor; background: transparent; color: inherit; font-size: 9px; font-weight: 900; letter-spacing: .08em; cursor: pointer; }
+.guide-manifesto button:first-child { background: var(--paper); color: var(--ink); }
+.guide-block { padding: 22px; border-bottom: 1px solid var(--ink); }
+.guide-block-head { display: flex; gap: 12px; align-items: flex-start; margin-bottom: 18px; }
+.guide-block-head > span { display: grid; place-items: center; width: 31px; height: 31px; flex: 0 0 31px; border: 1px solid var(--ink); border-radius: 50%; font-size: 10px; font-weight: 900; }
+.guide-block-head h3 { margin: 3px 0 0; font-size: 19px; line-height: 1; }
+.editorial-days { border: 1px solid var(--ink); }
+.editorial-days article + article { border-top: 1px solid var(--ink); }
+.editorial-days article > button { width: 100%; min-height: 48px; display: grid; grid-template-columns: 34px 1fr 20px; align-items: center; gap: 7px; padding: 0 11px; border: 0; background: transparent; text-align: left; cursor: pointer; }
+.editorial-days article.open > button { background: var(--ink); color: var(--paper); }
+.editorial-days article > button b, .editorial-days article > button i { font-size: 10px; font-style: normal; }
+.editorial-days article > button span { font-size: 11px; font-weight: 900; }
+.editorial-days article > div { display: grid; grid-template-columns: repeat(2, 1fr); }
+.editorial-days article p { margin: 0; padding: 12px; border-top: 1px solid var(--ink); font-size: 10px; line-height: 1.45; }
+.editorial-days article p:nth-child(odd) { border-right: 1px solid var(--ink); }
+.editorial-days article p:last-child { grid-column: 1 / -1; border-right: 0; }
+.editorial-days article p b, .local-food-grid p b { display: block; margin-bottom: 4px; font-size: 8px; letter-spacing: .08em; }
+.comparison-picker { display: flex; overflow-x: auto; gap: 6px; padding-bottom: 10px; scrollbar-width: thin; }
+.comparison-picker button { flex: 0 0 auto; padding: 8px 10px; border: 1px solid var(--ink); background: transparent; font-size: 8px; font-weight: 900; cursor: pointer; }
+.comparison-picker button.active { background: var(--ink); color: var(--paper); }
+.comparison-card { border: 1px solid var(--ink); }
+.comparison-title { display: grid; grid-template-columns: 1fr 40px 1fr; align-items: center; padding: 15px; background: #ded7c8; text-align: center; }
+.comparison-title b { font-size: 15px; }
+.comparison-title i { font-size: 8px; font-style: normal; }
+.comparison-table > div { display: grid; grid-template-columns: 90px 1fr 1fr; border-top: 1px solid var(--ink); }
+.comparison-table strong, .comparison-table span { padding: 9px; font-size: 9px; }
+.comparison-table strong, .comparison-table span:nth-child(2) { border-right: 1px solid var(--ink); }
+.comparison-card > p { margin: 0; padding: 13px; border-top: 1px solid var(--ink); font-size: 10px; line-height: 1.5; }
+.comparison-card > p b { display: block; margin-bottom: 4px; font-size: 8px; }
+.local-food-grid { display: grid; gap: 9px; }
+.local-food-grid article { padding: 14px; border: 1px solid var(--ink); }
+.local-food-grid h4 { margin: 0 0 10px; font-size: 12px; }
+.local-food-grid p { margin: 7px 0 0; font-size: 10px; line-height: 1.45; }
+.guide-link-button { width: 100%; margin-top: 10px; color: var(--ink); }
+.photo-list, .heritage-list, .night-list { display: grid; gap: 8px; }
+.photo-list article, .heritage-list article, .night-list article { padding: 12px; border: 1px solid var(--ink); }
+.photo-list article > div { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+.photo-list strong, .heritage-list strong { font-size: 11px; }
+.photo-list small, .heritage-list small { font-size: 8px; font-weight: 900; color: var(--accent); }
+.photo-list p, .heritage-list p, .night-list p { margin: 7px 0; font-size: 10px; line-height: 1.45; }
+.photo-list em, .heritage-list em, .night-list em { display: block; font-size: 9px; line-height: 1.4; opacity: .72; }
+.heritage-list article { position: relative; padding-right: 72px; }
+.heritage-list small { position: absolute; right: 11px; top: 12px; }
+.night-list b { font-size: 9px; letter-spacing: .1em; }
+.final-rules ul { margin: 0; padding: 0; list-style: none; border: 1px solid var(--ink); }
+.final-rules li { padding: 12px; font-size: 10px; line-height: 1.5; }
+.final-rules li + li { border-top: 1px solid var(--ink); }
+.final-rules li b { display: block; font-size: 9px; }
 .pace-picker { padding: 15px 18px; border-bottom: 1px solid var(--ink); background: #f2eee4; }
 .pace-picker > small { display: block; margin-bottom: 8px; font-size: 7px; font-weight: 950; letter-spacing: .16em; }
 .pace-picker > div { display: grid; grid-template-columns: repeat(3, 1fr); border: 1px solid var(--ink); }
