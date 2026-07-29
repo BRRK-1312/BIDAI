@@ -17,6 +17,8 @@
 .routeSummary span { display: grid; gap: 2px; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 7px; font-weight: 900; letter-spacing: .1em; }
 .routeSummary span b { font-size: 13px; letter-spacing: -.02em; }
 .routeSummary a, .fullLink { padding: 11px 12px; background: var(--ink); color: var(--paper); font-size: 8px; font-weight: 900; text-decoration: none; }
+.summaryButton, .fullTripButton { min-height: 40px; padding: 11px 12px; border: 0; background: var(--ink); color: var(--paper); font-size: 8px; font-weight: 900; cursor: pointer; }
+.fullTripButton { width: 100%; border: 1px solid var(--paper); background: var(--paper); color: var(--ink); }
 
 .all { background: var(--ink); }
 .base { background: var(--orange); }
@@ -52,6 +54,13 @@
 .agenda p { margin: 4px 0 0; font-size: 9px; line-height: 1.4; color: #625e56; }
 .note { margin: 16px; padding: 12px; border-left: 4px solid var(--orange); background: #ffd9c9; font-size: 10px; line-height: 1.5; }
 
+.tripPhases { display: grid; padding: 14px; gap: 9px; }
+.tripPhases button { display: grid; gap: 7px; padding: 15px; border: 1px solid var(--ink); background: #fffdf7; color: var(--ink); text-align: left; cursor: pointer; }
+.tripPhases button:hover { transform: translateX(3px); background: #eee8da; }
+.tripPhases small { color: var(--orange); font-size: 7px; font-weight: 950; letter-spacing: .13em; }
+.tripPhases strong { font-size: 14px; line-height: 1.15; }
+.tripPhases span { color: #625e56; font-size: 8px; font-weight: 850; }
+
 .rules { padding: 14px; display: grid; gap: 8px; }
 .rules article { padding: 14px; border: 1px solid var(--ink); background: #fffdf7; }
 .rules small { display: block; margin-bottom: 7px; color: var(--orange); font-size: 7px; font-weight: 900; letter-spacing: .12em; }
@@ -71,4 +80,6 @@
 @media (max-width: 760px) {
   .routeSummary { top: 72px; right: 12px; min-width: 180px; }
   .routeSummary span { padding: 7px 9px; }
+  :global(.guide-tabs) { grid-template-columns: repeat(5, minmax(0, 1fr)); }
+  :global(.guide-tabs button) { padding: 0 3px; font-size: 6px; letter-spacing: 0; }
 }
