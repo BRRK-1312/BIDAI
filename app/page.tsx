@@ -1072,6 +1072,9 @@ export default function Home() {
         maxZoom: 18,
       }).addTo(map);
       mapRef.current = map;
+      map.createPane("routePointsPane");
+      const routePointsPane = map.getPane("routePointsPane");
+      if (routePointsPane) routePointsPane.style.zIndex = "650";
 
       const all = L.layerGroup().addTo(map);
       layersRef.current[0] = all;
@@ -1204,12 +1207,17 @@ export default function Home() {
         ...waterWalks.map((walk) => ({ ...walk, hasBath: true })),
       ].forEach((walk) => {
         const color = walk.hasBath ? "#20a56b" : walk.difficulty === "FÁCIL" ? "#1779a8" : "#7b3fc6";
-        const marker = L.circleMarker(walk.start as [number, number], {
-          radius: walk.difficulty === "MEDIA" ? 9 : 7,
-          color: "#fffdf7",
-          weight: 3,
-          fillColor: color,
-          fillOpacity: 0.98,
+        const marker = L.marker(walk.start as [number, number], {
+          pane: "routePointsPane",
+          zIndexOffset: 1000,
+          icon: L.divIcon({
+            className: "route-point-icon-shell",
+            html: `<span class="route-point-icon" style="--route-color:${color}" aria-hidden="true">🥾</span>`,
+            iconSize: [32, 32],
+            iconAnchor: [16, 16],
+            popupAnchor: [0, -18],
+            tooltipAnchor: [0, -18],
+          }),
         });
         marker.bindTooltip(`🥾 ${walk.difficulty} · ${walk.title}`, { direction: "top", offset: [0, -8] });
         marker.bindPopup(
