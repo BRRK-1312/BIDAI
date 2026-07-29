@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
+import TripSelector from "./trip-selector";
 
 const basePath = process.env.NEXT_PUBLIC_BASE_PATH || "";
 
@@ -15,12 +16,9 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Norte de Portugal 2026",
-  description: "Mapa y guía interactiva para el viaje por el norte de Portugal y Baixo Miño.",
+  title: "BIDAIAK · Portugal + Aurillac 2026",
+  description: "Mapas y guías interactivas para los viajes a Portugal y Aurillac 2026.",
   manifest: `${basePath}/manifest.webmanifest`,
-  other: {
-    "codex-preview": "development",
-  },
   icons: {
     icon: `${basePath}/favicon.svg`,
     shortcut: `${basePath}/favicon.svg`,
@@ -34,9 +32,8 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="es">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+        <TripSelector />
         {children}
       </body>
     </html>
