@@ -125,7 +125,7 @@ export default function AurillacPage() {
     let cancelled = false;
     import("leaflet").then((L) => {
       if (cancelled || !mapNode.current) return;
-      const map = L.map(mapNode.current, { zoomControl: false, scrollWheelZoom: false }).setView([44.926, 2.44], 14);
+      const map = L.map(mapNode.current, { zoomControl: false, scrollWheelZoom: true }).setView([44.926, 2.44], 14);
       mapInstance.current = map;
       L.control.zoom({ position: "bottomright" }).addTo(map);
       L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "© OpenStreetMap", maxZoom: 19 }).addTo(map);
