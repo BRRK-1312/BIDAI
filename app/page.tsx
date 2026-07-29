@@ -1197,6 +1197,27 @@ export default function Home() {
         marker.addTo(foodLayer);
       });
 
+      const walkingPointsLayer = L.layerGroup();
+      layersRef.current[5] = walkingPointsLayer;
+      [
+        ...walks.map((walk) => ({ ...walk, hasBath: false })),
+        ...waterWalks.map((walk) => ({ ...walk, hasBath: true })),
+      ].forEach((walk) => {
+        const color = walk.hasBath ? "#20a56b" : walk.difficulty === "FÁCIL" ? "#1779a8" : "#7b3fc6";
+        const marker = L.circleMarker(walk.start as [number, number], {
+          radius: walk.difficulty === "MEDIA" ? 9 : 7,
+          color: "#fffdf7",
+          weight: 3,
+          fillColor: color,
+          fillOpacity: 0.98,
+        });
+        marker.bindTooltip(`🥾 ${walk.difficulty} · ${walk.title}`, { direction: "top", offset: [0, -8] });
+        marker.bindPopup(
+          `<div class="map-popup"><span>RUTA ${walk.difficulty} · BASE 0${walk.base}</span><strong>${walk.title}</strong><b>${walk.distance} · ${walk.time} · ${walk.elevation}</b><p>${walk.note}</p><a href="https://www.google.com/maps/search/?api=1&query=${walk.start[0]},${walk.start[1]}" target="_blank" rel="noreferrer">IR AL INICIO / PARKING ↗</a><a href="${walk.url}" target="_blank" rel="noreferrer">${walk.source} ↗</a></div>`,
+        );
+        marker.addTo(walkingPointsLayer);
+      });
+
       setMapLayersRevision((current) => current + 1);
     }
     init();
@@ -1210,7 +1231,7 @@ export default function Home() {
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
-    [1, 2, 3, 4].forEach((key) => {
+    [1, 2, 3, 4, 5].forEach((key) => {
       const layer = layersRef.current[key];
       if (layer && map.hasLayer(layer)) map.removeLayer(layer);
     });
@@ -1218,6 +1239,12 @@ export default function Home() {
     if (activeSection === "explore") layersRef.current[2]?.addTo(map);
     if (activeSection === "campings") layersRef.current[3]?.addTo(map);
     if (activeSection === "food") layersRef.current[4]?.addTo(map);
+    if (activeSection === "walks") {
+      layersRef.current[5]?.addTo(map);
+      const starts = [...walks, ...waterWalks].map((walk) => walk.start as [number, number]);
+      map.fitBounds(starts, { padding: [45, 45] });
+    }
+    window.requestAnimationFrame(() => map.invalidateSize());
   }, [activeSection, mapLayersRevision]);
 
   useEffect(() => {
