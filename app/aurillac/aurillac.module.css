@@ -1,5 +1,18 @@
 .page { min-height: 100vh; }
 
+/* Keep the Portugal desktop composition: places | map | guide. */
+.page :global(.layout) {
+  width: 100%;
+  min-width: 0;
+  grid-template-columns: minmax(260px, 320px) minmax(340px, 1fr) minmax(270px, 320px);
+}
+
+.page :global(.sidebar),
+.page :global(.map-panel),
+.page :global(.route-panel) {
+  min-width: 0;
+}
+
 .mapCanvas { position: absolute; inset: 0; z-index: 1; }
 
 .routeSummary {
@@ -100,11 +113,43 @@
 .checks label { min-height: 42px; display: flex; align-items: center; gap: 8px; padding: 9px; border-bottom: 1px solid var(--line); font-size: 9px; font-weight: 800; }
 .checks label:nth-child(odd) { border-right: 1px solid var(--line); }
 
-@media (max-width: 1080px) {
+@media (min-width: 901px) and (max-width: 1180px) {
+  .page :global(.layout) {
+    height: calc(100vh - 72px);
+    min-height: 620px;
+    display: grid;
+    grid-template-columns: minmax(235px, 28vw) minmax(320px, 1fr) minmax(250px, 29vw);
+  }
+
+  .page :global(.sidebar),
+  .page :global(.map-panel) {
+    height: auto;
+    min-height: 0;
+  }
+
+  .page :global(.route-panel) {
+    display: block;
+    grid-column: auto;
+    border-top: 0;
+    border-left: 1px solid var(--ink);
+    overflow: auto;
+  }
+
   .routeSummary { top: 78px; min-width: 190px; }
 }
 
+@media (min-width: 761px) and (max-width: 900px) {
+  .page :global(.layout) {
+    grid-template-columns: minmax(260px, 34vw) minmax(0, 1fr);
+  }
+
+  .page :global(.route-panel) {
+    grid-column: 1 / -1;
+  }
+}
+
 @media (max-width: 760px) {
+  .page :global(.layout) { display: flex; }
   .routeSummary { top: 72px; right: 12px; min-width: 180px; }
   .routeSummary span { padding: 7px 9px; }
   :global(.guide-tabs) { grid-template-columns: repeat(5, minmax(0, 1fr)); }
