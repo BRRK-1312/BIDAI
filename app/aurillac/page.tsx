@@ -250,7 +250,7 @@ export default function AurillacPage() {
           </div>
         </aside>
 
-        <section className="map-panel" id="map">
+        <section className="map-panel" id="aurillac-map">
           <div ref={mapNode} className={styles.mapCanvas} aria-label="Mapa del viaje a Aurillac" />
           <div className="map-title">
             <span>{showingAll ? "15/16—27 AGO · 12 DÍAS" : `DÍA ${active.day} · ${active.date}`}</span>
@@ -390,7 +390,7 @@ export default function AurillacPage() {
 
       <nav className="mobile-trip-nav" aria-label="Navegación móvil">
         <button className={activeSection === "today" ? "active" : ""} onClick={() => { setActiveSection("today"); document.querySelector(".route-panel")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}><b>●</b><span>HOY</span></button>
-        <button onClick={() => document.getElementById("map")?.scrollIntoView({ behavior: "smooth", block: "start" })}><b>⌖</b><span>MAPA</span></button>
+        <button onClick={() => document.getElementById("aurillac-map")?.scrollIntoView({ behavior: "smooth", block: "start" })}><b>⌖</b><span>MAPA</span></button>
         <button className={activeSection === "days" ? "active" : ""} onClick={() => { setActiveSection("days"); document.querySelector(".route-panel")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}><b>12</b><span>DÍAS</span></button>
         <button className={activeSection === "discover" ? "active" : ""} onClick={() => { setActiveSection("discover"); document.querySelector(".route-panel")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}><b>+</b><span>DESCUBRIR</span></button>
         <button className={activeSection === "saved" ? "active" : ""} onClick={() => { setActiveSection("saved"); document.querySelector(".route-panel")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}><b>♥</b><span>VIAJE</span></button>
