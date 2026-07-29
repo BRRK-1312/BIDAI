@@ -1,4 +1,4 @@
-const CACHE = "norte-portugal-2026-github-v2";
+const CACHE = "norte-portugal-2026-github-v3";
 const ROOT = new URL("./", self.registration.scope).pathname;
 const SHELL = [ROOT, `${ROOT}manifest.webmanifest`, `${ROOT}favicon.svg`];
 
