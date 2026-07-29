@@ -74,7 +74,7 @@ export default function AurillacPage() {
   const mapInstance = useRef<LeafletMap | null>(null);
   const markerLayer = useRef<LayerGroup | null>(null);
   const routeLayer = useRef<LayerGroup | null>(null);
-  const [selected, setSelected] = useState("04");
+  const [selected, setSelected] = useState("01");
   const [pace, setPace] = useState<Pace>("normal");
   const [filter, setFilter] = useState<"all"|Place["category"]>("all");
   const [saved, setSaved] = useState<string[]>([]);
@@ -87,7 +87,8 @@ export default function AurillacPage() {
   useEffect(() => {
     try {
       setSaved(JSON.parse(localStorage.getItem("aurillac-saved") || "[]"));
-      setSelected(localStorage.getItem("aurillac-day") || "04");
+      const storedDay = localStorage.getItem("aurillac-day");
+      setSelected(storedDay && stages.some(stage => stage.day === storedDay) ? storedDay : "01");
       setPace((localStorage.getItem("aurillac-pace") as Pace) || "normal");
     } catch { setSaved([]); }
     setReady(true);
@@ -154,8 +155,15 @@ export default function AurillacPage() {
       </header>
 
       <nav className={styles.quickNav} aria-label="Navegación de Aurillac">
-        <a href="#mapa">MAPA</a><a href="#day-plan">HOY</a><a href="#agenda">AGENDA</a><a href="#servicios">SERVICIOS</a><a href="#ruta">RUTA</a>
+        <a href="#ruta">VIAJE COMPLETO</a><a href="#mapa">MAPA</a><a href="#day-plan">DÍA</a><a href="#agenda">AGENDA</a><a href="#servicios">SERVICIOS</a>
       </nav>
+
+      <section className={styles.dayStrip} aria-label="Trayectos y planes por día">
+        <header><small>VIAJE COMPLETO · IDA + FESTIVAL + VUELTA</small><strong>SELECCIONA UN DÍA PARA VER SU TRAYECTO Y AGENDA</strong></header>
+        <div>
+          {stages.map(stage=><button type="button" className={selected===stage.day?styles.dayStripActive:""} onClick={()=>chooseDay(stage.day)} key={stage.day}><span>{stage.day}</span><small>{stage.date}</small><b>{stage.title}</b></button>)}
+        </div>
+      </section>
 
       <section className={styles.mapSection} id="mapa">
         <div className={styles.mapWrap}>
