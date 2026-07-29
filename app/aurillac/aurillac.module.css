@@ -61,6 +61,33 @@
 .tripPhases strong { font-size: 14px; line-height: 1.15; }
 .tripPhases span { color: #625e56; font-size: 8px; font-weight: 850; }
 
+.fullItinerary { margin: 0 14px 24px; border: 1px solid var(--ink); }
+.itineraryHeading { display: grid; gap: 5px; padding: 14px; background: var(--ink); color: var(--paper); }
+.itineraryHeading small { color: #ff765c; font-size: 7px; font-weight: 950; letter-spacing: .14em; }
+.itineraryHeading strong { font-size: 14px; }
+.fullItinerary > button {
+  width: 100%;
+  min-height: 58px;
+  display: grid;
+  grid-template-columns: 34px 1fr 18px;
+  gap: 10px;
+  align-items: center;
+  padding: 10px 12px;
+  border: 0;
+  border-top: 1px solid var(--line);
+  background: #fffdf7;
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+.fullItinerary > button:hover { background: #eee8da; }
+.fullItinerary > button > span { font: 900 9px/1 monospace; color: var(--orange); }
+.fullItinerary > button > div { display: grid; gap: 3px; }
+.fullItinerary > button small { font-size: 6px; font-weight: 900; letter-spacing: .1em; color: #6c675f; }
+.fullItinerary > button strong { font-size: 10px; }
+.fullItinerary > button em { font-size: 7px; font-style: normal; color: #6c675f; }
+.fullItinerary > button > b { font-size: 13px; }
+
 .rules { padding: 14px; display: grid; gap: 8px; }
 .rules article { padding: 14px; border: 1px solid var(--ink); background: #fffdf7; }
 .rules small { display: block; margin-bottom: 7px; color: var(--orange); font-size: 7px; font-weight: 900; letter-spacing: .12em; }
