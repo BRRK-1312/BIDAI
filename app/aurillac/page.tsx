@@ -103,8 +103,9 @@ export default function AurillacPage() {
   useEffect(() => {
     try {
       setSaved(JSON.parse(localStorage.getItem("aurillac-saved") || "[]"));
-      const storedDay = localStorage.getItem("aurillac-day");
-      setSelected(storedDay === "TODOS" || (storedDay && stages.some((stage) => stage.day === storedDay)) ? storedDay : "TODOS");
+      // Always open on the complete itinerary. Restoring an old selected day made
+      // returning visitors see only that stage (usually Vitoria → Bordeaux).
+      setSelected("TODOS");
       setPace((localStorage.getItem("aurillac-pace") as Pace) || "normal");
     } catch {
       setSaved([]);
@@ -260,7 +261,7 @@ export default function AurillacPage() {
               <>
                 <span><b>≈ 1.570 KM</b>IDA + VUELTA</span>
                 <span><b>12 ETAPAS</b>COCHE · BICI · A PIE</span>
-                <button className={styles.summaryButton} onClick={() => { setSelected("01"); setActiveSection("days"); }}>VER DÍAS →</button>
+                <button className={styles.summaryButton} onClick={() => setActiveSection("days")}>VER LOS 12 DÍAS →</button>
               </>
             ) : (
               <>
@@ -283,8 +284,8 @@ export default function AurillacPage() {
         <aside className="route-panel">
           <div className="route-head">
             <p className="eyebrow">GUÍA DE VIAJE</p>
-            <h2>{active.date}<br />{active.title}</h2>
-            <p>{active.base} · {active.drive}</p>
+            <h2>{showingAll ? "15/16—27 AGO" : active.date}<br />{showingAll ? "VIAJE COMPLETO" : active.title}</h2>
+            <p>{showingAll ? "VITORIA → AURILLAC → VITORIA · 12 ETAPAS" : `${active.base} · ${active.drive}`}</p>
           </div>
           <div className="guide-tabs" role="tablist" aria-label="Contenido de la guía">
             <button className={activeSection === "today" ? "active" : ""} onClick={() => setActiveSection("today")}>HOY</button>
@@ -306,6 +307,23 @@ export default function AurillacPage() {
                 <button onClick={() => chooseDay("01")}><small>IDA · DÍAS 01—03</small><strong>VITORIA → BURDEOS → DORDOÑA → AURILLAC</strong><span>755 KM APROX. · 3 ETAPAS</span></button>
                 <button onClick={() => chooseDay("04")}><small>FESTIVAL · DÍAS 04—07</small><strong>AURILLAC EN BICI Y A PIE</strong><span>19—22 AGO · SOLO ESPECTÁCULOS GRATUITOS</span></button>
                 <button onClick={() => chooseDay("08")}><small>VUELTA · DÍAS 08—12</small><strong>CANTAL → AUBRAC → TOULOUSE → BAYONA → VITORIA</strong><span>815 KM APROX. · 5 ETAPAS</span></button>
+              </section>
+              <section className={styles.fullItinerary}>
+                <div className={styles.itineraryHeading}>
+                  <small>ITINERARIO COMPLETO</small>
+                  <strong>12 DÍAS · 12 TRAYECTOS</strong>
+                </div>
+                {stages.map((stage) => (
+                  <button key={stage.day} onClick={() => chooseDay(stage.day)}>
+                    <span>{stage.day}</span>
+                    <div>
+                      <small>{stage.date}</small>
+                      <strong>{stage.title}</strong>
+                      <em>{stageDetails[stage.day].distance} · {stageDetails[stage.day].mode}</em>
+                    </div>
+                    <b>→</b>
+                  </button>
+                ))}
               </section>
             </div>
           )}
