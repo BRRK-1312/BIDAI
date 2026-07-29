@@ -88,13 +88,14 @@ export default function AurillacPage() {
   const mapInstance = useRef<LeafletMap | null>(null);
   const markerLayer = useRef<LayerGroup | null>(null);
   const routeLayer = useRef<LayerGroup | null>(null);
-  const [selected, setSelected] = useState("01");
+  const [selected, setSelected] = useState("TODOS");
   const [activeSection, setActiveSection] = useState<Section>("today");
   const [pace, setPace] = useState<Pace>("normal");
   const [filter, setFilter] = useState<"all" | PlaceCategory>("all");
   const [saved, setSaved] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
   const [mapReady, setMapReady] = useState(false);
+  const showingAll = selected === "TODOS";
   const active = useMemo(() => stages.find((stage) => stage.day === selected) || stages[0], [selected]);
   const detail = stageDetails[active.day];
   const visiblePlaces = useMemo(() => places.filter((place) => filter === "all" || place.category === filter), [filter]);
@@ -103,7 +104,7 @@ export default function AurillacPage() {
     try {
       setSaved(JSON.parse(localStorage.getItem("aurillac-saved") || "[]"));
       const storedDay = localStorage.getItem("aurillac-day");
-      setSelected(storedDay && stages.some((stage) => stage.day === storedDay) ? storedDay : "01");
+      setSelected(storedDay === "TODOS" || (storedDay && stages.some((stage) => stage.day === storedDay)) ? storedDay : "TODOS");
       setPace((localStorage.getItem("aurillac-pace") as Pace) || "normal");
     } catch {
       setSaved([]);
@@ -158,15 +159,44 @@ export default function AurillacPage() {
     if (!mapInstance.current || !routeLayer.current) return;
     import("leaflet").then((L) => {
       routeLayer.current?.clearLayers();
-      const line = L.polyline(detail.route, { color: "#e5482c", weight: 5, dashArray: active.kind === "festival" ? "10 8" : undefined, opacity: 0.95 }).addTo(routeLayer.current!);
-      detail.route.forEach((point, index) => L.circleMarker(point, { radius: index === 0 || index === detail.route.length - 1 ? 7 : 5, color: "#20201d", weight: 2, fillColor: "#f4f0e6", fillOpacity: 1 }).addTo(routeLayer.current!));
-      mapInstance.current?.fitBounds(line.getBounds(), { padding: [38, 38], maxZoom: active.kind === "festival" ? 15 : 9 });
+      if (showingAll) {
+        const colors = ["#20201d", "#c06a2c", "#e5482c", "#2f7d5b", "#1779a8", "#7b3fc6", "#b52a68", "#d39b22", "#20a56b", "#6656a8", "#8c3d27", "#20201d"];
+        const allPoints: [number, number][] = [];
+        stages.forEach((stage, stageIndex) => {
+          const stageDetail = stageDetails[stage.day];
+          allPoints.push(...stageDetail.route);
+          L.polyline(stageDetail.route, {
+            color: colors[stageIndex],
+            weight: stage.kind === "festival" ? 4 : 5,
+            dashArray: stage.kind === "festival" ? "8 7" : undefined,
+            opacity: stage.kind === "festival" ? 0.78 : 0.92,
+          })
+            .bindTooltip(`DÍA ${stage.day} · ${stage.title}`)
+            .addTo(routeLayer.current!);
+        });
+        const milestones = [stages[0].coords, stages[2].coords, stages[7].coords, stages[9].coords, stages[11].coords];
+        milestones.forEach((point, index) => L.circleMarker(point, {
+          radius: index === 0 || index === milestones.length - 1 ? 8 : 6,
+          color: "#f4f0e6",
+          weight: 3,
+          fillColor: "#20201d",
+          fillOpacity: 1,
+        }).addTo(routeLayer.current!));
+        mapInstance.current?.fitBounds(allPoints, { padding: [42, 42], maxZoom: 7 });
+      } else {
+        const line = L.polyline(detail.route, { color: "#e5482c", weight: 5, dashArray: active.kind === "festival" ? "10 8" : undefined, opacity: 0.95 }).addTo(routeLayer.current!);
+        detail.route.forEach((point, index) => L.circleMarker(point, { radius: index === 0 || index === detail.route.length - 1 ? 7 : 5, color: "#20201d", weight: 2, fillColor: "#f4f0e6", fillOpacity: 1 }).addTo(routeLayer.current!));
+        mapInstance.current?.fitBounds(line.getBounds(), { padding: [38, 38], maxZoom: active.kind === "festival" ? 15 : 9 });
+      }
     });
-  }, [active, detail, mapReady]);
+  }, [active, detail, mapReady, showingAll]);
 
   function chooseDay(day: string) {
     setSelected(day);
     setActiveSection("today");
+    if (window.innerWidth <= 1050) {
+      window.requestAnimationFrame(() => document.querySelector(".route-panel")?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    }
   }
 
   function focusPlace(place: Place) {
@@ -221,11 +251,24 @@ export default function AurillacPage() {
 
         <section className="map-panel" id="map">
           <div ref={mapNode} className={styles.mapCanvas} aria-label="Mapa del viaje a Aurillac" />
-          <div className="map-title"><span>DÍA {active.day} · {active.date}</span><strong>{active.title}</strong></div>
+          <div className="map-title">
+            <span>{showingAll ? "15/16—27 AGO · 12 DÍAS" : `DÍA ${active.day} · ${active.date}`}</span>
+            <strong>{showingAll ? "VIAJE COMPLETO" : active.title}</strong>
+          </div>
           <div className={styles.routeSummary}>
-            <span><b>{detail.distance}</b>DISTANCIA</span>
-            <span><b>{detail.duration}</b>{detail.mode}</span>
-            <a href={detail.navigation} target="_blank" rel="noreferrer">NAVEGAR ↗</a>
+            {showingAll ? (
+              <>
+                <span><b>≈ 1.570 KM</b>IDA + VUELTA</span>
+                <span><b>12 ETAPAS</b>COCHE · BICI · A PIE</span>
+                <button className={styles.summaryButton} onClick={() => { setSelected("01"); setActiveSection("days"); }}>VER DÍAS →</button>
+              </>
+            ) : (
+              <>
+                <span><b>{detail.distance}</b>DISTANCIA</span>
+                <span><b>{detail.duration}</b>{detail.mode}</span>
+                <a href={detail.navigation} target="_blank" rel="noreferrer">NAVEGAR ↗</a>
+              </>
+            )}
           </div>
           <div className="transport-legend">
             <span><i /> COCHE</span><span><i /> BICI / A PIE</span><small>TRAYECTO DEL DÍA ACTIVO</small>
@@ -251,7 +294,23 @@ export default function AurillacPage() {
             <button className={activeSection === "saved" ? "active" : ""} onClick={() => setActiveSection("saved")}>MI VIAJE</button>
           </div>
 
-          {activeSection === "today" && (
+          {showingAll && activeSection === "today" && (
+            <div className={styles.panel}>
+              <section className={styles.todayHero}>
+                <small>RUTA COMPLETA · 15/16—27 AGOSTO</small>
+                <h3>VITORIA → AURILLAC → VITORIA</h3>
+                <div><b>12 ETAPAS</b><span>IDA · FESTIVAL · REGRESO</span></div>
+                <button className={styles.fullTripButton} onClick={() => setActiveSection("days")}>ABRIR PLAN DÍA A DÍA →</button>
+              </section>
+              <section className={styles.tripPhases}>
+                <button onClick={() => chooseDay("01")}><small>IDA · DÍAS 01—03</small><strong>VITORIA → BURDEOS → DORDOÑA → AURILLAC</strong><span>755 KM APROX. · 3 ETAPAS</span></button>
+                <button onClick={() => chooseDay("04")}><small>FESTIVAL · DÍAS 04—07</small><strong>AURILLAC EN BICI Y A PIE</strong><span>19—22 AGO · SOLO ESPECTÁCULOS GRATUITOS</span></button>
+                <button onClick={() => chooseDay("08")}><small>VUELTA · DÍAS 08—12</small><strong>CANTAL → AUBRAC → TOULOUSE → BAYONA → VITORIA</strong><span>815 KM APROX. · 5 ETAPAS</span></button>
+              </section>
+            </div>
+          )}
+
+          {!showingAll && activeSection === "today" && (
             <div className={styles.panel}>
               <section className={styles.todayHero}>
                 <small>PLAN DEL DÍA · {detail.mode}</small><h3>{active.title}</h3>
@@ -276,6 +335,9 @@ export default function AurillacPage() {
 
           {activeSection === "days" && (
             <div className="day-list">
+              <article className={showingAll ? "selected" : ""}>
+                <button onClick={() => setSelected("TODOS")}><span>∞</span><div><b>15/16—27 AGO</b><strong>VIAJE COMPLETO</strong><small>IDA · FESTIVAL · VUELTA</small></div></button>
+              </article>
               {stages.map((stage) => (
                 <article className={selected === stage.day ? "selected" : ""} key={stage.day}>
                   <button onClick={() => chooseDay(stage.day)}><span>{stage.day}</span><div><b>{stage.date}</b><strong>{stage.title}</strong><small>{stage.base} · {stageDetails[stage.day].distance}</small></div></button>
@@ -309,11 +371,11 @@ export default function AurillacPage() {
       </section>
 
       <nav className="mobile-trip-nav" aria-label="Navegación móvil">
-        <button className={activeSection === "today" ? "active" : ""} onClick={() => setActiveSection("today")}><b>●</b><span>HOY</span></button>
+        <button className={activeSection === "today" ? "active" : ""} onClick={() => { setActiveSection("today"); document.querySelector(".route-panel")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}><b>●</b><span>HOY</span></button>
         <button onClick={() => document.getElementById("map")?.scrollIntoView({ behavior: "smooth", block: "start" })}><b>⌖</b><span>MAPA</span></button>
-        <button className={activeSection === "days" ? "active" : ""} onClick={() => setActiveSection("days")}><b>12</b><span>DÍAS</span></button>
-        <button className={activeSection === "discover" ? "active" : ""} onClick={() => setActiveSection("discover")}><b>+</b><span>DESCUBRIR</span></button>
-        <button className={activeSection === "saved" ? "active" : ""} onClick={() => setActiveSection("saved")}><b>♥</b><span>VIAJE</span></button>
+        <button className={activeSection === "days" ? "active" : ""} onClick={() => { setActiveSection("days"); document.querySelector(".route-panel")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}><b>12</b><span>DÍAS</span></button>
+        <button className={activeSection === "discover" ? "active" : ""} onClick={() => { setActiveSection("discover"); document.querySelector(".route-panel")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}><b>+</b><span>DESCUBRIR</span></button>
+        <button className={activeSection === "saved" ? "active" : ""} onClick={() => { setActiveSection("saved"); document.querySelector(".route-panel")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}><b>♥</b><span>VIAJE</span></button>
       </nav>
     </main>
   );
