@@ -34,6 +34,16 @@ type Place = {
   coords: [number, number];
   detail: string;
 };
+type BaseGuide = {
+  id: string;
+  eyebrow: string;
+  name: string;
+  dates: string;
+  coords: [number, number];
+  intro: string;
+  sections: { label: string; items: string[] }[];
+  essential: string;
+};
 
 const stages: Stage[] = [
   { day: "01", date: "15 AGO", title: "VITORIA → VAYRAC", base: "LA PALENQUIÈRE", drive: "TRASLADO + MONTAJE", coords: [44.9538, 1.7039], kind: "route", plan: ["Salida temprana de Vitoria–Gasteiz", "Dos pausas reales durante el trayecto", "Montaje, compra básica y paseo por Vayrac", "Baño o descanso junto al río"], note: "La prioridad es llegar con margen y empezar descansados; no añadir una visita importante." },
@@ -80,6 +90,58 @@ const places: Place[] = [
   { id: "station", name: "Gare d’Aurillac", category: "transport", coords: [44.9209, 2.4356], detail: "Tren y referencia de movilidad" },
 ];
 
+const baseGuides: BaseGuide[] = [
+  {
+    id: "discover-palenquiere", eyebrow: "BASE 01 · VALLE DEL DORDOÑA", name: "LA PALENQUIÈRE · VAYRAC", dates: "15—18 AGO · 3 NOCHES", coords: [44.9538, 1.7039],
+    intro: "Pueblos de piedra, agua y paisajes del Quercy. Todo queda a distancias cortas y permite alternar visitas con baños.",
+    sections: [
+      { label: "QUÉ VER", items: ["Martel: siete torres, mercado cubierto y casco medieval", "Carennac: priorato, casas renacentistas y paseo junto al Dordoña", "Autoire: pueblo en anfiteatro y cascada", "Loubressac: miradores sobre los valles del Dordoña, Bave y Cère", "Gouffre de Padirac como opción de pago y con reserva"] },
+      { label: "AGUA Y PLAYAS FLUVIALES", items: ["Plage de Vayrac junto al Dordoña", "Plage de Mézels, tranquila y de acceso sencillo", "Baño en Carennac, comprobando corriente y señalización", "Canoa desde Carennac como actividad opcional"] },
+      { label: "GASTRONOMÍA", items: ["Nuez del Périgord y aceite de nuez", "Cabécou de Rocamadour", "Cordero fermier du Quercy", "Pastis quercynois y productos de pato", "Mercados y picnic con producto local"] },
+    ],
+    essential: "No perderse Autoire + cascada + Loubressac y reservar una tarde lenta junto al Dordoña.",
+  },
+  {
+    id: "discover-ponetie", eyebrow: "BASE 02 · FESTIVAL", name: "LA PONÉTIE · AURILLAC", dates: "18—23 AGO · 5 NOCHES", coords: [44.9197, 2.4328],
+    intro: "Base práctica para entrar al festival en bicicleta. El centro es compacto, pero conviene reconocer los ejes y aparcar antes de las zonas más densas.",
+    sections: [
+      { label: "QUÉ VER", items: ["Casco histórico y Place de l’Hôtel de Ville", "Château Saint-Étienne y vistas sobre la ciudad", "Abbatiale Saint-Géraud y barrio medieval", "Jardins de la Jordanne para descansar entre funciones", "Place des Carmes, Cours Monthyon y Square des Justes"] },
+      { label: "ESCAPADAS Y AGUA", items: ["Lac des Graves para paseo, picnic y descanso", "Gorges de la Jordanne si queda una mañana libre", "Lac de Saint-Étienne-Cantalès para playa y baño", "Puy Courny: paseo corto y panorámica de Aurillac"] },
+      { label: "GASTRONOMÍA", items: ["Queso AOP Cantal en distintas curaciones", "Truffade o aligot con tome fraîche", "Pounti de acelga, cerdo y ciruelas", "Salers: carne, queso y aperitivo de genciana", "Mercado cubierto para comprar comida de picnic"] },
+    ],
+    essential: "Conseguir el programa OFF actualizado, moverse por bloques cercanos y dejar cada día un tramo abierto para descubrimientos gratuitos.",
+  },
+  {
+    id: "discover-citarelle", eyebrow: "BASE 03 · AVEYRON Y VALLE DEL LOT", name: "LA CITARELLE · SAINT-CYPRIEN", dates: "23—27 AGO · 4 NOCHES", coords: [44.5492, 2.40988],
+    intro: "La base más tranquila: patrimonio excepcional, pueblos sobre el Lot, baños y carreteras panorámicas para cerrar el viaje sin prisas.",
+    sections: [
+      { label: "QUÉ VER", items: ["Conques: abadía, tímpano, vidrieras de Soulages y calles medievales", "Estaing: castillo, puente gótico y paseo junto al Lot", "Entraygues-sur-Truyère, entre los ríos Lot y Truyère", "Grand-Vabre y La Vinzelle para una jornada cercana", "Belcastel, Marcillac-Vallon o Rodez como alternativas"] },
+      { label: "AGUA Y PLAYAS FLUVIALES", items: ["Piscina de La Citarelle para las tardes de descanso", "Base nautique de Vieillevie en el Lot", "Entraygues: canoa, paddle o descenso fluvial", "Lac de Pareloup si se elige una excursión larga", "Comprobar siempre caudal, accesos y zonas autorizadas"] },
+      { label: "GASTRONOMÍA", items: ["Aligot y estofado de Aubrac", "Farçous de acelga", "Queso Laguiole AOP", "Vino de Marcillac y uva fer servadou", "Fouace aveyronnaise y gâteau à la broche"] },
+    ],
+    essential: "Ver Conques temprano o al final de la tarde y dedicar un día completo a una sola variante del valle del Lot.",
+  },
+];
+
+async function getRoadRoute(stage: Stage, detail: StageDetail): Promise<[number, number][]> {
+  const cacheKey = `aurillac-route-v2-${stage.day}`;
+  try {
+    const cached = sessionStorage.getItem(cacheKey);
+    if (cached) return JSON.parse(cached) as [number, number][];
+    const coordinates = detail.route.map(([lat, lon]) => `${lon},${lat}`).join(";");
+    const profile = stage.kind === "festival" ? "cycling" : "driving";
+    const response = await fetch(`https://router.project-osrm.org/route/v1/${profile}/${coordinates}?overview=full&geometries=geojson&steps=false`);
+    if (!response.ok) throw new Error("Routing unavailable");
+    const payload = await response.json() as { routes?: { geometry?: { coordinates?: [number, number][] } }[] };
+    const roadCoordinates = payload.routes?.[0]?.geometry?.coordinates?.map(([lon, lat]) => [lat, lon] as [number, number]);
+    if (!roadCoordinates?.length) throw new Error("Empty route");
+    sessionStorage.setItem(cacheKey, JSON.stringify(roadCoordinates));
+    return roadCoordinates;
+  } catch {
+    return detail.route;
+  }
+}
+
 const conflictRules = [
   ["SOLO GRATIS", "TODOS LOS DÍAS", "Las propuestas de pago quedan fuera del plan y de la agenda recomendada."],
   ["INCONTINUO / PROJET FANTÔME", "NO ENCADENAR", "Elegir uno si sus horarios vuelven a solaparse."],
@@ -99,6 +161,7 @@ export default function AurillacPage() {
   const [saved, setSaved] = useState<string[]>([]);
   const [ready, setReady] = useState(false);
   const [mapReady, setMapReady] = useState(false);
+  const [routeStatus, setRouteStatus] = useState<"loading" | "real" | "fallback">("loading");
   const showingAll = selected === "TODOS";
   const active = useMemo(() => stages.find((stage) => stage.day === selected) || stages[0], [selected]);
   const detail = stageDetails[active.day];
@@ -162,15 +225,23 @@ export default function AurillacPage() {
 
   useEffect(() => {
     if (!mapInstance.current || !routeLayer.current) return;
-    import("leaflet").then((L) => {
+    let cancelled = false;
+    const drawRoutes = async () => {
+      setRouteStatus("loading");
+      const L = await import("leaflet");
+      if (cancelled) return;
       routeLayer.current?.clearLayers();
       if (showingAll) {
         const colors = ["#20201d", "#c06a2c", "#e5482c", "#2f7d5b", "#1779a8", "#7b3fc6", "#b52a68", "#d39b22", "#20a56b", "#6656a8", "#8c3d27", "#c06a2c", "#20201d"];
         const allPoints: [number, number][] = [];
-        stages.forEach((stage, stageIndex) => {
+        let usedFallback = false;
+        for (const [stageIndex, stage] of stages.entries()) {
           const stageDetail = stageDetails[stage.day];
-          allPoints.push(...stageDetail.route);
-          L.polyline(stageDetail.route, {
+          const roadRoute = await getRoadRoute(stage, stageDetail);
+          if (cancelled) return;
+          if (roadRoute === stageDetail.route) usedFallback = true;
+          allPoints.push(...roadRoute);
+          L.polyline(roadRoute, {
             color: colors[stageIndex],
             weight: stage.kind === "festival" ? 4 : 5,
             dashArray: stage.kind === "festival" ? "8 7" : undefined,
@@ -178,7 +249,7 @@ export default function AurillacPage() {
           })
             .bindTooltip(`DÍA ${stage.day} · ${stage.title}`)
             .addTo(routeLayer.current!);
-        });
+        }
         const milestones = [stages[0].coords, stages[3].coords, stages[8].coords, stages[11].coords, stages[12].coords];
         milestones.forEach((point, index) => L.circleMarker(point, {
           radius: index === 0 || index === milestones.length - 1 ? 8 : 6,
@@ -188,12 +259,18 @@ export default function AurillacPage() {
           fillOpacity: 1,
         }).addTo(routeLayer.current!));
         mapInstance.current?.fitBounds(allPoints, { padding: [42, 42], maxZoom: 7 });
+        setRouteStatus(usedFallback ? "fallback" : "real");
       } else {
-        const line = L.polyline(detail.route, { color: "#e5482c", weight: 5, dashArray: active.kind === "festival" ? "10 8" : undefined, opacity: 0.95 }).addTo(routeLayer.current!);
+        const roadRoute = await getRoadRoute(active, detail);
+        if (cancelled) return;
+        const line = L.polyline(roadRoute, { color: "#e5482c", weight: 5, dashArray: active.kind === "festival" ? "10 8" : undefined, opacity: 0.95 }).addTo(routeLayer.current!);
         detail.route.forEach((point, index) => L.circleMarker(point, { radius: index === 0 || index === detail.route.length - 1 ? 7 : 5, color: "#20201d", weight: 2, fillColor: "#f4f0e6", fillOpacity: 1 }).addTo(routeLayer.current!));
         mapInstance.current?.fitBounds(line.getBounds(), { padding: [38, 38], maxZoom: active.kind === "festival" ? 15 : 9 });
+        setRouteStatus(roadRoute === detail.route ? "fallback" : "real");
       }
-    });
+    };
+    void drawRoutes();
+    return () => { cancelled = true; };
   }, [active, detail, mapReady, showingAll]);
 
   function chooseDay(day: string) {
@@ -265,12 +342,14 @@ export default function AurillacPage() {
               <>
                 <span><b>≈ 1.600–1.840 KM</b>RUTA COMPLETA</span>
                 <span><b>13 ETAPAS</b>COCHE · BICI · A PIE</span>
+                <span className={styles.routeState}><b>{routeStatus === "loading" ? "CALCULANDO…" : routeStatus === "real" ? "TRAZADO REAL" : "TRAZADO BÁSICO"}</b>{routeStatus === "real" ? "SIGUE CARRETERAS Y CALLES" : "OPENSTREETMAP"}</span>
                 <button className={styles.summaryButton} onClick={() => setActiveSection("days")}>VER LOS 13 DÍAS →</button>
               </>
             ) : (
               <>
                 <span><b>{detail.distance}</b>DISTANCIA</span>
                 <span><b>{detail.duration}</b>{detail.mode}</span>
+                <span className={styles.routeState}><b>{routeStatus === "loading" ? "CALCULANDO…" : routeStatus === "real" ? "TRAZADO REAL" : "TRAZADO BÁSICO"}</b>{routeStatus === "real" ? "SIGUE CARRETERAS Y CALLES" : "OPENSTREETMAP"}</span>
                 <a href={detail.navigation} target="_blank" rel="noreferrer">NAVEGAR ↗</a>
               </>
             )}
@@ -370,8 +449,30 @@ export default function AurillacPage() {
           )}
 
           {activeSection === "discover" && (
-            <div className="section-hub">
-              {places.map((place, index) => <button key={place.id} onClick={() => { setFilter(place.category); focusPlace(place); }}><span>{String(index + 1).padStart(2, "0")}</span><strong>{place.name}</strong><p>{place.detail}</p></button>)}
+            <div className={styles.discover}>
+              <div className={styles.discoverIntro}>
+                <small>GUÍA POR BASES</small>
+                <h3>QUÉ VER, COMER Y NO PERDERSE</h3>
+                <p>Tres territorios para combinar patrimonio, paisaje, gastronomía y agua sin aumentar innecesariamente los kilómetros.</p>
+              </div>
+              {baseGuides.map((base) => (
+                <article className={styles.baseGuide} key={base.id}>
+                  <button className={styles.baseGuideHead} onClick={() => mapInstance.current?.flyTo(base.coords, 12)}>
+                    <small>{base.eyebrow}</small>
+                    <strong>{base.name}</strong>
+                    <span>{base.dates} · VER EN MAPA ↗</span>
+                  </button>
+                  <p className={styles.baseIntro}>{base.intro}</p>
+                  {base.sections.map((section) => (
+                    <section className={styles.discoverSection} key={section.label}>
+                      <small>{section.label}</small>
+                      <ul>{section.items.map((item) => <li key={item}>{item}</li>)}</ul>
+                    </section>
+                  ))}
+                  <div className={styles.essential}><small>IMPRESCINDIBLE</small><p>{base.essential}</p></div>
+                  <button className={saved.includes(base.id) ? styles.savedBase : styles.saveBase} onClick={() => toggleSaved(base.id)}>{saved.includes(base.id) ? "♥ BASE GUARDADA" : "♡ GUARDAR ESTA BASE"}</button>
+                </article>
+              ))}
             </div>
           )}
 
