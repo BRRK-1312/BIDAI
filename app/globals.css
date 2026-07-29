@@ -125,6 +125,21 @@ button { color: inherit; }
 .leaflet-tooltip { border-radius: 0 !important; border: 1px solid var(--ink) !important; box-shadow: none !important; background: var(--paper) !important; font-size: 10px; font-weight: 800; }
 .leaflet-popup-content-wrapper { border-radius: 0 !important; border: 1px solid var(--ink); box-shadow: 4px 4px 0 rgba(32,32,29,.22) !important; background: var(--paper) !important; }
 .leaflet-popup-tip { background: var(--paper) !important; }
+.route-point-icon-shell { background: transparent !important; border: 0 !important; }
+.route-point-icon {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  box-sizing: border-box;
+  border: 3px solid #fffdf7;
+  border-radius: 50%;
+  background: var(--route-color);
+  color: #fff;
+  font-size: 15px;
+  line-height: 1;
+  box-shadow: 0 2px 0 #20201d, 0 0 0 1px #20201d;
+}
 .map-popup { display: grid; gap: 7px; min-width: 190px; }
 .map-popup span { font-size: 8px; font-weight: 900; letter-spacing: .12em; color: #747067; }
 .map-popup strong { font-size: 16px; }
