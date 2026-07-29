@@ -373,6 +373,18 @@ button { color: inherit; }
 .day-list article > button strong small { font-size: 7px; color: #777168; letter-spacing: .08em; }
 .day-list article > button b { font-size: 16px; }
 .day-list article.selected { background: #fffaf0; }
+.day-list article.optional-day > button { box-shadow: inset 5px 0 0 #20a56b; }
+.day-list article.optional-day > button strong::after {
+  content: "OPCIONAL · SOLO SI AMPLIÁIS LIMA ESCAPE";
+  display: block;
+  width: max-content;
+  margin-top: 5px;
+  padding: 3px 5px;
+  background: #20a56b;
+  color: #fff;
+  font-size: 6px;
+  letter-spacing: .08em;
+}
 .day-detail { margin: 0 18px 16px 62px; display: grid; gap: 10px; }
 .day-base { padding: 7px 9px; border-left: 4px solid; background: rgba(32,32,29,.055); font-size: 8px; font-weight: 900; letter-spacing: .1em; }
 .day-detail section { padding-top: 9px; border-top: 1px solid var(--line); }
