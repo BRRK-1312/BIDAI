@@ -108,6 +108,7 @@ const dayOperations: Record<string, {
   "02": { base: 1, parking: "Bragança: entorno de la ciudadela. Lima Escape: dentro del camping.", parkingMinutes: 25, walkMinutes: 90, visitMinutes: 150, restMinutes: 45, lastExit: "14:30", road: "Bragança → Lima Escape: etapa transversal de unas 3 h por carreteras interiores.", toll: "La alternativa rápida puede utilizar vías con peaje electrónico.", border: "Sin cruce fronterizo.", warnings: ["No salir tarde de Bragança", "Montar la tienda con luz", "No intentar añadir Soajo este día"], priority: "IMPRESCINDIBLE" },
   "03": { base: 1, parking: "Soajo: aparcamiento junto a la entrada del pueblo. Lindoso: junto al castillo.", parkingMinutes: 20, walkMinutes: 150, visitMinutes: 150, restMinutes: 45, lastExit: "18:30", road: "Carreteras estrechas, curvas y tráfico lento dentro de Peneda–Gerês.", toll: "Sin peajes previstos.", border: "Sin cruce fronterizo.", warnings: ["Aparcamiento pequeño: antes de las 10:00", "Cobertura irregular", "Llevar agua", "Roca resbaladiza", "Evitar pozas tras lluvia"], priority: "IMPRESCINDIBLE" },
   "04": { base: 1, parking: "Sistelo: aparcamientos señalizados a la entrada. Arcos: aparcamientos del centro o junto a la Valeta.", parkingMinutes: 30, walkMinutes: 180, visitMinutes: 210, restMinutes: 60, lastExit: "19:00", road: "Carreteras locales lentas y sinuosas entre Entre Ambos-os-Rios, Sistelo y Arcos.", toll: "Sin peajes previstos.", border: "Sin cruce fronterizo.", warnings: ["Llegar temprano a Sistelo", "No bloquear accesos vecinales", "Pasarelas resbaladizas si llueve", "Prever taxi si se hace la Ecovia lineal", "Comprobar baño en la Valeta"], priority: "IMPRESCINDIBLE" },
+  "EX": { base: 1, parking: "Vila do Gerês: aparcamientos urbanos. Pedra Bela y Arado: plazas muy limitadas. Portela do Homem: aparcar únicamente donde esté permitido junto a la frontera.", parkingMinutes: 45, walkMinutes: 150, visitMinutes: 240, restMinutes: 60, lastExit: "18:30", road: "Etapa lenta por carreteras de montaña, con curvas, estrechamientos y circulación regulada en Mata da Albergaria.", toll: "Sin peajes previstos.", border: "Se alcanza la frontera de Portela do Homem, sin necesidad de entrar en Galicia.", warnings: ["Salir antes de las 08:30", "Accesos y aparcamientos muy concurridos en agosto", "No estacionar en Mata da Albergaria", "Cobertura irregular", "Llevar agua", "Evitar cascadas y pozas tras lluvias", "Confirmar restricciones de circulación del parque"], priority: "MUY RECOMENDABLE" },
   "05": { base: 2, parking: "Bom Jesus: aparcamiento superior o funicular. Braga: parkings urbanos.", parkingMinutes: 30, walkMinutes: 150, visitMinutes: 210, restMinutes: 60, lastExit: "17:30", road: "Tramo urbano lento en Braga y entrada a Viana.", toll: "La ruta rápida puede incluir autopista de peaje.", border: "Sin cruce fronterizo.", warnings: ["Día de desmontaje y montaje", "Reservar margen para tráfico urbano"], priority: "IMPRESCINDIBLE" },
   "06": { base: 2, parking: "Viana: parking Campo d’Agonia. Santa Luzia: aparcamiento superior limitado.", parkingMinutes: 25, walkMinutes: 120, visitMinutes: 240, restMinutes: 60, lastExit: "19:30", road: "Desplazamientos urbanos cortos.", toll: "Sin peajes previstos.", border: "Sin cruce fronterizo.", warnings: ["Santa Luzia pierde interés con niebla", "Cabedelo expuesta al viento"], priority: "MUY RECOMENDABLE" },
   "07": { base: 2, parking: "Afife y Moledo: aparcamientos de playa; Caminha: zona de la estación.", parkingMinutes: 35, walkMinutes: 90, visitMinutes: 300, restMinutes: 60, lastExit: "20:00", road: "N13 costera con tráfico de agosto; evitar encadenar demasiadas playas.", toll: "Sin peajes previstos.", border: "Sin cruce fronterizo.", warnings: ["Playas expuestas al viento", "Corrientes atlánticas", "Restaurante: reservar para cenar"], priority: "IMPRESCINDIBLE" },
@@ -193,6 +194,7 @@ const dayRoutes = [
   { day: "02", title: "Bragança → Lima Escape", color: "#c06a2c", points: [[41.8061, -6.7567], [41.824395, -8.318062]] },
   { day: "03", title: "Soajo + Lindoso", color: "#e5482c", points: [[41.824395, -8.318062], [41.8721, -8.2634], [41.8662, -8.1998], [41.824395, -8.318062]] },
   { day: "04", title: "Sistelo + Arcos de Valdevez", color: "#d39b22", points: [[41.824395, -8.318062], [41.9733, -8.3746], [41.8467, -8.4191], [41.824395, -8.318062]] },
+  { day: "EX", title: "Extra · Valle de Gerês", color: "#20a56b", points: [[41.824395, -8.318062], [41.7288, -8.16203], [41.7168, -8.1586], [41.723, -8.129], [41.80366, -8.12804], [41.824395, -8.318062]] },
   { day: "05", title: "Braga → Cabedelo", color: "#8c3d27", points: [[41.824395, -8.318062], [41.5547, -8.3771], [41.5518, -8.4229], [41.678611, -8.823056]] },
   { day: "06", title: "Viana + Santa Luzia", color: "#1779a8", points: [[41.678611, -8.823056], [41.6932, -8.8329], [41.7044, -8.8342], [41.678611, -8.823056]] },
   { day: "07", title: "Costa norte", color: "#1779a8", points: [[41.678611, -8.823056], [41.7812, -8.8725], [41.8158, -8.8695], [41.8496, -8.8664], [41.8753, -8.8387], [41.678611, -8.823056]] },
@@ -249,6 +251,18 @@ const dailyPlans = [
     food: "Cachena, cabrito o arroz de feijão en Arcos; opción económica de prato do dia y productos del Mercado Municipal.",
     rain: "Paço de Giela, centro histórico de Arcos y Museu da Água; evitar pasarelas, bancales y baño.",
     pace: { tranquilo: "Sistelo, miradores, paseo por Arcos y baño en la Valeta.", normal: "Tramo fácil de la Ecovia, Sistelo, comida y Arcos.", completo: "Ecovia Vilela → Sistelo de 10,5 km; reservar taxi o segundo coche y dejar Arcos para el final." },
+  },
+  {
+    day: "EX", date: "DÍA EXTRA · FECHA FLEXIBLE", drive: "≈ 120 KM · 3 H–3 H 30 REALES", base: "LIMA ESCAPE · NOCHE OPCIONAL 4/4",
+    schedule: ["Salida temprana hacia Vila do Gerês", "Paseo sombreado por el Parque das Termas", "Miradouro da Pedra Bela", "Cascata do Arado si el acceso está abierto y hay aparcamiento", "Mata da Albergaria y Cascata da Portela do Homem", "Regreso con margen a Lima Escape"],
+    walk: "Plan normal: paseos cortos de Termas, Pedra Bela y Portela · 4–6 km fáciles. Plan completo alternativo: PR9 MTR Trilho das 7 Lagoas · 10,1 km · +300 m · media; no combinarlo con todas las paradas.",
+    food: "Caldo verde, cabrito, vitela barrosã o trucha en Vila do Gerês; para el plan completo, llevar pícnic y 2 l de agua por persona.",
+    rain: "Vila do Gerês, Parque das Termas, Museu Etnográfico de Vilarinho da Furna y comida tranquila. Omitir Arado, Portela y 7 Lagoas si hay tormenta, caudal alto o roca mojada.",
+    pace: {
+      tranquilo: "Vila do Gerês + Parque das Termas + Pedra Bela + comida; añadir un baño seguro solo si las condiciones son buenas.",
+      normal: "Vila do Gerês, Pedra Bela, Cascata do Arado, Mata da Albergaria y Portela do Homem, con paseos cortos.",
+      completo: "Elegir PR9 Trilho das 7 Lagoas como actividad principal. Después, solo Vila do Gerês o Parque das Termas; no intentar enlazar todas las cascadas.",
+    },
   },
   {
     day: "05", date: "MIÉ · 5 AGO", drive: "≈ 125 KM · 2 H 15", base: "TRASLADO A INATEL CABEDELO · NOCHE 1/3",
@@ -904,6 +918,7 @@ export default function Home() {
 
   function weatherAdvice(day: string) {
     const value = weather[day];
+    if (day === "EX" && !value) return "Día flexible: comprobar la previsión de Vila do Gerês la víspera y evitar cascadas tras lluvia.";
     if (!value) return weatherStatus === "error" ? "Previsión no disponible: consultar antes de salir." : "Cargando previsión actualizada…";
     if (value.rain >= 55 && [2, 3, 4, 10].includes(Number(day))) return day === "10" ? "Evitar las pozas de Mougás; mejor Oia y Baiona." : "Evitar pozas y pasarelas; mejor Braga, Arcos o patrimonio cubierto.";
     if (value.wind >= 35 && [6, 7, 10].includes(Number(day))) return "Costa muy expuesta: priorizar pueblos y patrimonio; comprobar oleaje.";
@@ -1300,7 +1315,7 @@ export default function Home() {
         </div>
         <div className="trip-meta">
           <span>01—11 AGO</span>
-          <span>11 DÍAS</span>
+          <span>11 DÍAS + 1 OPCIONAL</span>
           <span>3 BASES</span>
         </div>
       </header>
@@ -1468,7 +1483,7 @@ export default function Home() {
                   const plan = dailyPlans.find((item) => item.day === route.day)!;
                   const open = activeDay === route.day;
                   return (
-                    <article className={open ? "selected" : ""} key={route.day}>
+                    <article className={`${open ? "selected" : ""} ${route.day === "EX" ? "optional-day" : ""}`} key={route.day}>
                       <button onClick={() => setActiveDay(open ? "TODOS" : route.day)} aria-expanded={open}>
                         <span style={{ borderColor: route.color }}>{route.day}</span>
                         <strong>
