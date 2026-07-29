@@ -29,6 +29,8 @@
 
 .routeSummary span { display: grid; gap: 2px; padding: 10px 12px; border-bottom: 1px solid var(--line); font-size: 7px; font-weight: 900; letter-spacing: .1em; }
 .routeSummary span b { font-size: 13px; letter-spacing: -.02em; }
+.routeSummary .routeState { background: #e8f0dc; color: #3c5b25; }
+.routeSummary .routeState b { font-size: 9px; letter-spacing: .06em; }
 .routeSummary a, .fullLink { padding: 11px 12px; background: var(--ink); color: var(--paper); font-size: 8px; font-weight: 900; text-decoration: none; }
 .summaryButton, .fullTripButton { min-height: 40px; padding: 11px 12px; border: 0; background: var(--ink); color: var(--paper); font-size: 8px; font-weight: 900; cursor: pointer; }
 .fullTripButton { width: 100%; border: 1px solid var(--paper); background: var(--paper); color: var(--ink); }
@@ -108,6 +110,41 @@
 .rules p { margin: 7px 0 12px; font-size: 9px; line-height: 1.45; }
 .rules button { min-height: 32px; padding: 6px 9px; border: 1px solid var(--ink); background: transparent; font-size: 8px; font-weight: 900; cursor: pointer; }
 .rules button.saved { background: var(--ink); color: var(--paper); }
+
+.discover { padding-bottom: 38px; }
+.discoverIntro { padding: 22px 18px; border-bottom: 1px solid var(--ink); background: var(--ink); color: var(--paper); }
+.discoverIntro small { color: #ff765c; font-size: 7px; font-weight: 950; letter-spacing: .16em; }
+.discoverIntro h3 { margin: 7px 0 10px; font-size: 27px; line-height: .92; letter-spacing: -.04em; }
+.discoverIntro p { margin: 0; color: #d7d2c9; font-size: 9px; line-height: 1.5; }
+.baseGuide { border-bottom: 6px solid var(--ink); background: #fffdf7; }
+.baseGuideHead {
+  width: 100%;
+  display: grid;
+  gap: 5px;
+  padding: 16px 18px;
+  border: 0;
+  border-bottom: 1px solid var(--ink);
+  background: var(--orange);
+  color: var(--ink);
+  text-align: left;
+  cursor: pointer;
+}
+.baseGuide:nth-of-type(3) .baseGuideHead { background: #80bd9a; }
+.baseGuide:nth-of-type(4) .baseGuideHead { background: #e5b856; }
+.baseGuideHead small { font-size: 7px; font-weight: 950; letter-spacing: .14em; }
+.baseGuideHead strong { font-size: 18px; line-height: 1; }
+.baseGuideHead span { font-size: 7px; font-weight: 900; }
+.baseIntro { margin: 0; padding: 14px 18px; border-bottom: 1px solid var(--line); font-size: 9px; line-height: 1.5; }
+.discoverSection { padding: 14px 18px; border-bottom: 1px solid var(--line); }
+.discoverSection > small, .essential small { color: var(--orange); font-size: 7px; font-weight: 950; letter-spacing: .14em; }
+.discoverSection ul { margin: 10px 0 0; padding: 0; list-style: none; }
+.discoverSection li { position: relative; padding: 6px 0 6px 15px; font-size: 9px; font-weight: 750; line-height: 1.35; }
+.discoverSection li + li { border-top: 1px dotted var(--line); }
+.discoverSection li::before { content: "↗"; position: absolute; left: 0; color: var(--orange); font-weight: 950; }
+.essential { margin: 14px 18px; padding: 12px; border-left: 4px solid var(--orange); background: #f2e5cb; }
+.essential p { margin: 5px 0 0; font-size: 9px; font-weight: 800; line-height: 1.45; }
+.saveBase, .savedBase { width: calc(100% - 36px); min-height: 38px; margin: 0 18px 18px; border: 1px solid var(--ink); background: transparent; font-size: 8px; font-weight: 950; cursor: pointer; }
+.savedBase { background: var(--ink); color: var(--paper); }
 
 .checks { display: grid; grid-template-columns: 1fr 1fr; margin-top: 12px; border: 1px solid var(--ink); }
 .checks label { min-height: 42px; display: flex; align-items: center; gap: 8px; padding: 9px; border-bottom: 1px solid var(--line); font-size: 9px; font-weight: 800; }
