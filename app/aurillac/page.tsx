@@ -6,7 +6,7 @@ import "leaflet/dist/leaflet.css";
 import styles from "./aurillac.module.css";
 
 type Pace = "tranquilo" | "normal" | "completo";
-type Section = "today" | "days" | "discover" | "plan" | "saved";
+type Section = "today" | "days" | "shows" | "discover" | "plan" | "saved";
 type PlaceCategory = "base" | "festival" | "service" | "transport";
 type Stage = {
   day: string;
@@ -44,6 +44,87 @@ type BaseGuide = {
   sections: { label: string; items: string[] }[];
   essential: string;
 };
+type Performance = {
+  id: string;
+  date: "19" | "20" | "21" | "22";
+  time: string;
+  company: string;
+  title: string;
+  venue: string;
+  duration: string;
+  programme: "ON" | "OFF";
+  access: "LIBRE" | "PAGO";
+};
+
+const officialPerformances: Performance[] = [
+  { id: "19-launch", date: "19", time: "12:30", company: "ÉCLAT", title: "Lancement du Festival", venue: "Place de l’Hôtel de Ville", duration: "1 h", programme: "ON", access: "LIBRE" },
+  { id: "19-phoenix", date: "19", time: "17:00", company: "Marzouk Machine", title: "Phoenix", venue: "Enclos Bideau", duration: "3 h 10", programme: "ON", access: "PAGO" },
+  { id: "19-brilliant", date: "19", time: "17:30", company: "Temple Independent Theater Company", title: "Every Brilliant Thing", venue: "Collège Jeanne de la Treilhe", duration: "1 h 15", programme: "ON", access: "PAGO" },
+  { id: "19-supermale", date: "19", time: "18:00", company: "Nancy Naous · 4120.CORPS", title: "SUPERMÂLE", venue: "Collège de la Jordanne", duration: "40 min", programme: "ON", access: "PAGO" },
+  { id: "19-defile", date: "19", time: "18:30", company: "ERd’O", title: "Le Grand Défilé", venue: "Haras National", duration: "1 h", programme: "ON", access: "PAGO" },
+  { id: "19-asile", date: "19", time: "19:00", company: "Ensemble Facture · Nicolas Barry", title: "La Demande d’Asile", venue: "Square des Justes", duration: "50 min", programme: "ON", access: "LIBRE" },
+  { id: "19-gouskate", date: "19", time: "19:00", company: "Cie C’hoari", title: "Da Gouskate!", venue: "Parking de la Tour", duration: "45 min", programme: "ON", access: "LIBRE" },
+  { id: "19-wishes", date: "19", time: "20:00", company: "Raeda Saadeh", title: "Wishes Tree", venue: "Cours Monthyon", duration: "1 h", programme: "ON", access: "LIBRE" },
+  { id: "19-gros", date: "19", time: "20:00", company: "Cie Le Fils du Grand Réseau", title: "Les Gros patinent bien", venue: "8 rue Cayla", duration: "1 h 20", programme: "ON", access: "PAGO" },
+  { id: "19-nuisibles", date: "19", time: "20:30", company: "In Itinere Collectif", title: "Nuisibles", venue: "Collège de la Jordanne", duration: "1 h 40", programme: "ON", access: "LIBRE" },
+  { id: "19-bird", date: "19", time: "21:00", company: "Selma & Sofiane Ouissi", title: "BIRD", venue: "Lycée Émile Duclaux", duration: "50 min", programme: "ON", access: "PAGO" },
+  { id: "19-coeur", date: "19", time: "22:00", company: "Hiya Compagnie · Dalila Belaza", title: "Au cœur et Un peu pour mon cœur… Variation", venue: "Place Michel Crespin", duration: "55 min", programme: "ON", access: "LIBRE" },
+  { id: "19-womb", date: "19", time: "22:00", company: "Shaymaa Shoukry", title: "Womb", venue: "Navette · 36 av. des Pupilles de la Nation", duration: "1 h 30", programme: "ON", access: "PAGO" },
+  { id: "19-fantome", date: "19", time: "23:00", company: "Cie Monstre(s) · Étienne Saglio", title: "Projet Fantôme", venue: "Square des Justes", duration: "25 min", programme: "ON", access: "LIBRE" },
+  { id: "20-kms", date: "20", time: "11:00", company: "Cie Jil Z · Mehdi Dahkan", title: "KMs OF RESISTANCE", venue: "Parvis de l’Hôtel de Ville", duration: "40 min", programme: "ON", access: "LIBRE" },
+  { id: "20-wishes", date: "20", time: "11:00", company: "Raeda Saadeh", title: "Wishes Tree", venue: "Cours Monthyon", duration: "1 h", programme: "ON", access: "LIBRE" },
+  { id: "20-defile1", date: "20", time: "15:00", company: "ERd’O", title: "Le Grand Défilé", venue: "Haras National", duration: "1 h", programme: "ON", access: "PAGO" },
+  { id: "20-phoenix", date: "20", time: "17:00", company: "Marzouk Machine", title: "Phoenix", venue: "Enclos Bideau", duration: "3 h 10", programme: "ON", access: "PAGO" },
+  { id: "20-brilliant", date: "20", time: "17:30", company: "Temple Independent Theater Company", title: "Every Brilliant Thing", venue: "Collège Jeanne de la Treilhe", duration: "1 h 15", programme: "ON", access: "PAGO" },
+  { id: "20-supermale", date: "20", time: "18:00", company: "Nancy Naous · 4120.CORPS", title: "SUPERMÂLE", venue: "Collège de la Jordanne", duration: "40 min", programme: "ON", access: "PAGO" },
+  { id: "20-defile2", date: "20", time: "18:30", company: "ERd’O", title: "Le Grand Défilé", venue: "Haras National", duration: "1 h", programme: "ON", access: "PAGO" },
+  { id: "20-asile", date: "20", time: "19:00", company: "Ensemble Facture · Nicolas Barry", title: "La Demande d’Asile", venue: "Square des Justes", duration: "50 min", programme: "ON", access: "LIBRE" },
+  { id: "20-gouskate", date: "20", time: "19:00", company: "Cie C’hoari", title: "Da Gouskate!", venue: "Parking de la Tour", duration: "45 min", programme: "ON", access: "LIBRE" },
+  { id: "20-hmadcha", date: "20", time: "20:00", company: "Anania Danses · Taoufiq Izeddiou", title: "Hmadcha", venue: "Place des Carmes", duration: "1 h 10", programme: "ON", access: "LIBRE" },
+  { id: "20-gros", date: "20", time: "20:30", company: "Cie Le Fils du Grand Réseau", title: "Les Gros patinent bien", venue: "8 rue Cayla", duration: "1 h 20", programme: "ON", access: "PAGO" },
+  { id: "20-nuisibles", date: "20", time: "20:30", company: "In Itinere Collectif", title: "Nuisibles", venue: "Collège de la Jordanne", duration: "1 h 40", programme: "ON", access: "LIBRE" },
+  { id: "20-bird", date: "20", time: "21:00", company: "Selma & Sofiane Ouissi", title: "BIRD", venue: "Lycée Émile Duclaux", duration: "50 min", programme: "ON", access: "PAGO" },
+  { id: "20-coeur", date: "20", time: "22:00", company: "Hiya Compagnie · Dalila Belaza", title: "Au cœur et Un peu pour mon cœur… Variation", venue: "Place Michel Crespin", duration: "55 min", programme: "ON", access: "LIBRE" },
+  { id: "20-incontinuo", date: "20", time: "22:00", company: "Kamchàtka", title: "INCONTINUO", venue: "Parking Château Saint-Étienne", duration: "1 h 15", programme: "ON", access: "LIBRE" },
+  { id: "20-womb", date: "20", time: "22:00", company: "Shaymaa Shoukry", title: "Womb", venue: "Navette · 36 av. des Pupilles de la Nation", duration: "1 h 30", programme: "ON", access: "PAGO" },
+  { id: "20-fantome", date: "20", time: "23:00", company: "Cie Monstre(s) · Étienne Saglio", title: "Projet Fantôme", venue: "Square des Justes", duration: "25 min", programme: "ON", access: "LIBRE" },
+  { id: "20-bleue", date: "20", time: "23:00", company: "Minuit Compagnie", title: "Bleue Volute", venue: "Rue du Pont d’Aliès", duration: "45 min", programme: "ON", access: "LIBRE" },
+  { id: "21-coeur", date: "21", time: "11:00", company: "Hiya Compagnie · Dalila Belaza", title: "Au cœur et Un peu pour mon cœur… Variation", venue: "Place Michel Crespin", duration: "55 min", programme: "ON", access: "LIBRE" },
+  { id: "21-kms", date: "21", time: "11:00", company: "Cie Jil Z · Mehdi Dahkan", title: "KMs OF RESISTANCE", venue: "Parvis de l’Hôtel de Ville", duration: "40 min", programme: "ON", access: "LIBRE" },
+  { id: "21-wishes", date: "21", time: "11:00", company: "Raeda Saadeh", title: "Wishes Tree", venue: "Cours Monthyon", duration: "1 h", programme: "ON", access: "LIBRE" },
+  { id: "21-defile1", date: "21", time: "15:00", company: "ERd’O", title: "Le Grand Défilé", venue: "Haras National", duration: "1 h", programme: "ON", access: "PAGO" },
+  { id: "21-phoenix", date: "21", time: "17:00", company: "Marzouk Machine", title: "Phoenix", venue: "Enclos Bideau", duration: "3 h 10", programme: "ON", access: "PAGO" },
+  { id: "21-brilliant", date: "21", time: "17:30", company: "Temple Independent Theater Company", title: "Every Brilliant Thing", venue: "Collège Jeanne de la Treilhe", duration: "1 h 15", programme: "ON", access: "PAGO" },
+  { id: "21-supermale", date: "21", time: "18:00", company: "Nancy Naous · 4120.CORPS", title: "SUPERMÂLE", venue: "Collège de la Jordanne", duration: "40 min", programme: "ON", access: "PAGO" },
+  { id: "21-defile2", date: "21", time: "18:30", company: "ERd’O", title: "Le Grand Défilé", venue: "Haras National", duration: "1 h", programme: "ON", access: "PAGO" },
+  { id: "21-asile", date: "21", time: "19:00", company: "Ensemble Facture · Nicolas Barry", title: "La Demande d’Asile", venue: "Square des Justes", duration: "50 min", programme: "ON", access: "LIBRE" },
+  { id: "21-gouskate", date: "21", time: "19:00", company: "Cie C’hoari", title: "Da Gouskate!", venue: "Parking de la Tour", duration: "45 min", programme: "ON", access: "LIBRE" },
+  { id: "21-hmadcha", date: "21", time: "20:00", company: "Anania Danses · Taoufiq Izeddiou", title: "Hmadcha", venue: "Place des Carmes", duration: "1 h 10", programme: "ON", access: "LIBRE" },
+  { id: "21-gros", date: "21", time: "20:00", company: "Cie Le Fils du Grand Réseau", title: "Les Gros patinent bien", venue: "8 rue Cayla", duration: "1 h 20", programme: "ON", access: "PAGO" },
+  { id: "21-nuisibles", date: "21", time: "20:30", company: "In Itinere Collectif", title: "Nuisibles", venue: "Collège de la Jordanne", duration: "1 h 40", programme: "ON", access: "LIBRE" },
+  { id: "21-bird", date: "21", time: "21:00", company: "Selma & Sofiane Ouissi", title: "BIRD", venue: "Lycée Émile Duclaux", duration: "50 min", programme: "ON", access: "PAGO" },
+  { id: "21-bleue", date: "21", time: "21:45", company: "Minuit Compagnie", title: "Bleue Volute", venue: "Rue du Pont d’Aliès", duration: "45 min", programme: "ON", access: "LIBRE" },
+  { id: "21-incontinuo", date: "21", time: "22:00", company: "Kamchàtka", title: "INCONTINUO", venue: "Parking Château Saint-Étienne", duration: "1 h 15", programme: "ON", access: "LIBRE" },
+  { id: "21-womb", date: "21", time: "22:00", company: "Shaymaa Shoukry", title: "Womb", venue: "Navette · 36 av. des Pupilles de la Nation", duration: "1 h 30", programme: "ON", access: "PAGO" },
+  { id: "21-aichoucha", date: "21", time: "22:45", company: "Khalil Epi", title: "Aïchoucha", venue: "Place des Carmes", duration: "1 h 15", programme: "ON", access: "LIBRE" },
+  { id: "21-fantome", date: "21", time: "23:00", company: "Cie Monstre(s) · Étienne Saglio", title: "Projet Fantôme", venue: "Square des Justes", duration: "25 min", programme: "ON", access: "LIBRE" },
+  { id: "21-dj", date: "21", time: "23:45", company: "La Louuve", title: "DJ Set", venue: "Place des Carmes", duration: "1 h 30", programme: "ON", access: "LIBRE" },
+  { id: "22-kms", date: "22", time: "11:00", company: "Cie Jil Z · Mehdi Dahkan", title: "KMs OF RESISTANCE", venue: "Parvis de l’Hôtel de Ville", duration: "40 min", programme: "ON", access: "LIBRE" },
+  { id: "22-phoenix", date: "22", time: "17:00", company: "Marzouk Machine", title: "Phoenix", venue: "Enclos Bideau", duration: "3 h 10", programme: "ON", access: "PAGO" },
+  { id: "22-brilliant", date: "22", time: "17:30", company: "Temple Independent Theater Company", title: "Every Brilliant Thing", venue: "Collège Jeanne de la Treilhe", duration: "1 h 15", programme: "ON", access: "PAGO" },
+  { id: "22-supermale", date: "22", time: "18:00", company: "Nancy Naous · 4120.CORPS", title: "SUPERMÂLE", venue: "Collège de la Jordanne", duration: "40 min", programme: "ON", access: "PAGO" },
+  { id: "22-gouskate", date: "22", time: "19:00", company: "Cie C’hoari", title: "Da Gouskate!", venue: "Parking de la Tour", duration: "45 min", programme: "ON", access: "LIBRE" },
+  { id: "22-wishes", date: "22", time: "20:00", company: "Raeda Saadeh", title: "Wishes Tree", venue: "Cours Monthyon", duration: "1 h", programme: "ON", access: "LIBRE" },
+  { id: "22-hmadcha", date: "22", time: "20:00", company: "Anania Danses · Taoufiq Izeddiou", title: "Hmadcha", venue: "Place des Carmes", duration: "1 h 10", programme: "ON", access: "LIBRE" },
+  { id: "22-gros", date: "22", time: "20:00", company: "Cie Le Fils du Grand Réseau", title: "Les Gros patinent bien", venue: "8 rue Cayla", duration: "1 h 20", programme: "ON", access: "PAGO" },
+  { id: "22-bird", date: "22", time: "21:00", company: "Selma & Sofiane Ouissi", title: "BIRD", venue: "Lycée Émile Duclaux", duration: "50 min", programme: "ON", access: "PAGO" },
+  { id: "22-bleue", date: "22", time: "21:45", company: "Minuit Compagnie", title: "Bleue Volute", venue: "Rue du Pont d’Aliès", duration: "45 min", programme: "ON", access: "LIBRE" },
+  { id: "22-incontinuo", date: "22", time: "22:00", company: "Kamchàtka", title: "INCONTINUO", venue: "Parking Château Saint-Étienne", duration: "1 h 15", programme: "ON", access: "LIBRE" },
+  { id: "22-womb", date: "22", time: "22:00", company: "Shaymaa Shoukry", title: "Womb", venue: "Navette · 36 av. des Pupilles de la Nation", duration: "1 h 30", programme: "ON", access: "PAGO" },
+  { id: "22-aichoucha", date: "22", time: "22:45", company: "Khalil Epi", title: "Aïchoucha", venue: "Place des Carmes", duration: "1 h 15", programme: "ON", access: "LIBRE" },
+  { id: "22-fantome", date: "22", time: "23:00", company: "Cie Monstre(s) · Étienne Saglio", title: "Projet Fantôme", venue: "Square des Justes", duration: "25 min", programme: "ON", access: "LIBRE" },
+  { id: "22-dj", date: "22", time: "23:45", company: "La Louuve", title: "DJ Set", venue: "Place des Carmes", duration: "1 h 30", programme: "ON", access: "LIBRE" },
+];
 
 const stages: Stage[] = [
   { day: "01", date: "15 AGO", title: "VITORIA → VAYRAC", base: "LA PALENQUIÈRE", drive: "TRASLADO + MONTAJE", coords: [44.9538, 1.7039], kind: "route", plan: ["Salida temprana de Vitoria–Gasteiz", "Dos pausas reales durante el trayecto", "Montaje, compra básica y paseo por Vayrac", "Baño o descanso junto al río"], note: "La prioridad es llegar con margen y empezar descansados; no añadir una visita importante." },
@@ -162,10 +243,23 @@ export default function AurillacPage() {
   const [ready, setReady] = useState(false);
   const [mapReady, setMapReady] = useState(false);
   const [routeStatus, setRouteStatus] = useState<"loading" | "real" | "fallback">("loading");
+  const [showDay, setShowDay] = useState<"TODOS" | "19" | "20" | "21" | "22">("TODOS");
+  const [showAccess, setShowAccess] = useState<"TODOS" | "LIBRE" | "PAGO">("TODOS");
+  const [showProgramme, setShowProgramme] = useState<"TODOS" | "ON" | "OFF">("TODOS");
+  const [showSearch, setShowSearch] = useState("");
   const showingAll = selected === "TODOS";
   const active = useMemo(() => stages.find((stage) => stage.day === selected) || stages[0], [selected]);
   const detail = stageDetails[active.day];
   const visiblePlaces = useMemo(() => places.filter((place) => filter === "all" || place.category === filter), [filter]);
+  const visiblePerformances = useMemo(() => {
+    const query = showSearch.trim().toLocaleLowerCase("es");
+    return officialPerformances.filter((performance) =>
+      (showDay === "TODOS" || performance.date === showDay) &&
+      (showAccess === "TODOS" || performance.access === showAccess) &&
+      (showProgramme === "TODOS" || performance.programme === showProgramme) &&
+      (!query || `${performance.company} ${performance.title} ${performance.venue}`.toLocaleLowerCase("es").includes(query))
+    );
+  }, [showAccess, showDay, showProgramme, showSearch]);
 
   useEffect(() => {
     try {
@@ -373,6 +467,7 @@ export default function AurillacPage() {
           <div className="guide-tabs" role="tablist" aria-label="Contenido de la guía">
             <button className={activeSection === "today" ? "active" : ""} onClick={() => setActiveSection("today")}>HOY</button>
             <button className={activeSection === "days" ? "active" : ""} onClick={() => setActiveSection("days")}>DÍAS</button>
+            <button className={activeSection === "shows" ? "active" : ""} onClick={() => setActiveSection("shows")}>ACTUACIONES</button>
             <button className={activeSection === "discover" ? "active" : ""} onClick={() => setActiveSection("discover")}>DESCUBRIR</button>
             <button className={activeSection === "plan" ? "active" : ""} onClick={() => setActiveSection("plan")}>PLANIFICAR</button>
             <button className={activeSection === "saved" ? "active" : ""} onClick={() => setActiveSection("saved")}>MI VIAJE</button>
@@ -476,6 +571,48 @@ export default function AurillacPage() {
             </div>
           )}
 
+          {activeSection === "shows" && (
+            <div className={styles.shows}>
+              <div className={styles.showsHero}>
+                <small>FESTIVAL 2026 · 19—22 AGOSTO</small>
+                <h3>TODAS LAS ACTUACIONES</h3>
+                <p>Programa ON oficial completo y espacio preparado para las compañías de paso/OFF.</p>
+                <div><b>{visiblePerformances.length}</b><span>PASES VISIBLES</span></div>
+              </div>
+              <div className={styles.showFilters}>
+                <div>{(["TODOS", "19", "20", "21", "22"] as const).map((day) => <button className={showDay === day ? styles.filterActive : ""} key={day} onClick={() => setShowDay(day)}>{day === "TODOS" ? "4 DÍAS" : `${day} AGO`}</button>)}</div>
+                <div>{(["TODOS", "ON", "OFF"] as const).map((programme) => <button className={showProgramme === programme ? styles.filterActive : ""} key={programme} onClick={() => setShowProgramme(programme)}>{programme}</button>)}</div>
+                <div>{(["TODOS", "LIBRE", "PAGO"] as const).map((access) => <button className={showAccess === access ? styles.filterActive : ""} key={access} onClick={() => setShowAccess(access)}>{access === "LIBRE" ? "GRATIS" : access}</button>)}</div>
+                <input value={showSearch} onChange={(event) => setShowSearch(event.target.value)} placeholder="BUSCAR COMPAÑÍA, OBRA O LUGAR…" aria-label="Buscar actuaciones" />
+              </div>
+              {(showProgramme === "TODOS" || showProgramme === "OFF") && (
+                <section className={styles.offNotice}>
+                  <small>OFF · COMPAÑÍAS DE PASO</small>
+                  <strong>HORARIOS PENDIENTES DE PUBLICACIÓN</strong>
+                  <p>ÉCLAT indica que el programa único de los cuatro días estará disponible el 17 de agosto a las 14:00. No mostramos datos provisionales ni de 2025.</p>
+                  <a href="https://www.aurillac.net/festival-aurillac/compagnies-de-passage/" target="_blank" rel="noreferrer">CONSULTAR FUENTE OFICIAL ↗</a>
+                </section>
+              )}
+              {(showProgramme === "TODOS" || showProgramme === "ON") && (
+                <div className={styles.performanceList}>
+                  {visiblePerformances.length === 0 ? <p className={styles.emptyShows}>NO HAY PASES QUE COINCIDAN CON LOS FILTROS.</p> : (["19", "20", "21", "22"] as const).map((date) => {
+                    const dayPerformances = visiblePerformances.filter((performance) => performance.date === date);
+                    if (!dayPerformances.length) return null;
+                    return <section className={styles.performanceDay} key={date}>
+                      <header><span>{date}</span><div><small>AGOSTO · PROGRAMA ON</small><strong>{date === "19" ? "MIÉRCOLES" : date === "20" ? "JUEVES" : date === "21" ? "VIERNES" : "SÁBADO"}</strong></div><b>{dayPerformances.length} PASES</b></header>
+                      {dayPerformances.map((performance) => <article key={performance.id}>
+                        <time>{performance.time}</time>
+                        <div><small>{performance.company}</small><strong>{performance.title}</strong><p>⌖ {performance.venue}</p><span>{performance.duration}</span></div>
+                        <aside><em className={performance.access === "LIBRE" ? styles.free : styles.paid}>{performance.access === "LIBRE" ? "GRATIS" : "PAGO"}</em><button className={saved.includes(`show-${performance.id}`) ? styles.savedShow : ""} onClick={() => toggleSaved(`show-${performance.id}`)} aria-label={`Guardar ${performance.title}`}>{saved.includes(`show-${performance.id}`) ? "♥" : "♡"}</button></aside>
+                      </article>)}
+                    </section>;
+                  })}
+                </div>
+              )}
+              <footer className={styles.showSource}>ACTUALIZADO 31 JUL 2026 · <a href="https://www.aurillac.net/wp-content/uploads/2026/07/PROG-OFFICIEL-AURILLAC26-web.pdf" target="_blank" rel="noreferrer">PROGRAMA OFICIAL ÉCLAT ↗</a></footer>
+            </div>
+          )}
+
           {activeSection === "plan" && (
             <div className={styles.panel}>
               <section className={styles.block}><small>REGLAS DE DECISIÓN</small><h3>NO ENCADENAR LO IMPOSIBLE</h3><p>Uno o dos espectáculos prioritarios por día y un bloque libre de 2–3 horas.</p></section>
@@ -497,7 +634,7 @@ export default function AurillacPage() {
         <button className={activeSection === "today" ? "active" : ""} onClick={() => { setActiveSection("today"); document.querySelector(".route-panel")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}><b>●</b><span>HOY</span></button>
         <button onClick={() => document.getElementById("aurillac-map")?.scrollIntoView({ behavior: "smooth", block: "start" })}><b>⌖</b><span>MAPA</span></button>
         <button className={activeSection === "days" ? "active" : ""} onClick={() => { setActiveSection("days"); document.querySelector(".route-panel")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}><b>13</b><span>DÍAS</span></button>
-        <button className={activeSection === "discover" ? "active" : ""} onClick={() => { setActiveSection("discover"); document.querySelector(".route-panel")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}><b>+</b><span>DESCUBRIR</span></button>
+        <button className={activeSection === "shows" ? "active" : ""} onClick={() => { setActiveSection("shows"); document.querySelector(".route-panel")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}><b>♪</b><span>ACTUACIONES</span></button>
         <button className={activeSection === "saved" ? "active" : ""} onClick={() => { setActiveSection("saved"); document.querySelector(".route-panel")?.scrollIntoView({ behavior: "smooth", block: "start" }); }}><b>♥</b><span>VIAJE</span></button>
       </nav>
     </main>
