@@ -117,21 +117,32 @@ export default function DecisionCenter() {
       .sort((a,b)=>a.km-b.km).slice(0,8);
   },[query,range,base]);
 
-  const chosen = ranked.slice(0, weather === "lluvia" ? 2 : pace === "completo" ? 3 : 2);
-  const start = 9 * 60;
-  let cursor = start;
-  const timeline = chosen.flatMap((p, index) => {
-    const drive = Math.max(15, Math.round(p.km * 1.6));
-    const rows = [
-      {time: clock(cursor), text: index ? `Traslado a ${p.name}` : `Salida de ${bases[base].name}`},
-      {time: clock(cursor += drive), text: `${p.name} · ${p.note}`},
-    ];
-    cursor += p.duration;
-    if (index === 0) rows.push({time: clock(cursor), text: "Comida / descanso · confirmar horario y reserva"});
-    cursor += index === 0 ? 75 : 25;
-    return rows;
-  });
-  timeline.push({time: clock(cursor), text: `Regreso estimado a ${bases[base].name}`});
+  const chosen = useMemo(
+    () => ranked.slice(0, weather === "lluvia" ? 2 : pace === "completo" ? 3 : 2),
+    [ranked, weather, pace],
+  );
+  const timeline = useMemo(() => {
+    const steps = chosen.reduce<{ cursor: number; rows: { time: string; text: string }[] }>(
+      (acc, place, index) => {
+        const drive = Math.max(15, Math.round(place.km * 1.6));
+        const arrival = acc.cursor + drive;
+        const afterVisit = arrival + place.duration;
+        return {
+          cursor: afterVisit + (index === 0 ? 75 : 25),
+          rows: [
+            ...acc.rows,
+            { time: clock(acc.cursor), text: index ? `Traslado a ${place.name}` : `Salida de ${bases[base].name}` },
+            { time: clock(arrival), text: `${place.name} · ${place.note}` },
+            ...(index === 0
+              ? [{ time: clock(afterVisit), text: "Comida / descanso · confirmar horario y reserva" }]
+              : []),
+          ],
+        };
+      },
+      { cursor: 9 * 60, rows: [] },
+    );
+    return [...steps.rows, { time: clock(steps.cursor), text: `Regreso estimado a ${bases[base].name}` }];
+  }, [chosen, base]);
 
   const getNear = () => {
     if (!navigator.geolocation) return setNear({coords:bases[base].coords,status:"Geolocalización no disponible"});
