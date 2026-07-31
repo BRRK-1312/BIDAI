@@ -711,6 +711,15 @@ async function fetchRoadRoute(day: string, points: readonly (readonly number[])[
   return null;
 }
 
+function escapeHtml(text: string) {
+  return text
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;")
+    .replaceAll("'", "&#39;");
+}
+
 function formatRoadDuration(seconds: number) {
   const totalMinutes = Math.max(1, Math.round(seconds / 60));
   const hours = Math.floor(totalMinutes / 60);
@@ -816,12 +825,27 @@ export default function Home() {
 
   useEffect(() => {
     if (!storageLoaded) return;
-    localStorage.setItem("np-favorites", JSON.stringify(favorites));
-    localStorage.setItem("np-visited", JSON.stringify(visited));
-    localStorage.setItem("np-plan", JSON.stringify(planItems));
-    localStorage.setItem("np-diary", JSON.stringify(diary));
-    localStorage.setItem("np-offline-bases", JSON.stringify(downloadedBases));
-    localStorage.setItem("np-events-checked", eventCheckedAt);
+    const save = (key: string, value: string) => {
+      try {
+        localStorage.setItem(key, value);
+      } catch {
+        // Un dato sin espacio no debe impedir que se guarde el resto del viaje.
+      }
+    };
+    save("np-favorites", JSON.stringify(favorites));
+    save("np-visited", JSON.stringify(visited));
+    save("np-plan", JSON.stringify(planItems));
+    try {
+      localStorage.setItem("np-diary", JSON.stringify(diary));
+    } catch {
+      // Las fotos base64 pueden superar la cuota. Conservamos al menos notas y valoraciones.
+      const withoutPhotos = Object.fromEntries(
+        Object.entries(diary).map(([name, entry]) => [name, { ...entry, photo: undefined }]),
+      );
+      save("np-diary", JSON.stringify(withoutPhotos));
+    }
+    save("np-offline-bases", JSON.stringify(downloadedBases));
+    save("np-events-checked", eventCheckedAt);
   }, [favorites, visited, planItems, diary, downloadedBases, eventCheckedAt, storageLoaded]);
 
   useEffect(() => {
@@ -1033,7 +1057,7 @@ export default function Home() {
       ...walks.map((item) => ({ name: `Inicio · ${item.title}`, coords: item.start })),
       ...waterWalks.map((item) => ({ name: `Inicio · ${item.title}`, coords: item.start })),
     ];
-    const safe = (text: string) => text.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+    const safe = escapeHtml;
     if (format === "gpx") {
       downloadText("norte-portugal-2026.gpx", `<?xml version="1.0" encoding="UTF-8"?><gpx version="1.1" creator="Norte Portugal 2026">${points.map((point) => `<wpt lat="${point.coords[0]}" lon="${point.coords[1]}"><name>${safe(point.name)}</name></wpt>`).join("")}</gpx>`, "application/gpx+xml");
     } else {
@@ -1068,7 +1092,7 @@ export default function Home() {
   function printDiary() {
     const popup = window.open("", "_blank");
     if (!popup) return;
-    popup.document.write(`<!doctype html><html><head><title>Diario Norte de Portugal</title><style>body{font:15px Arial;max-width:820px;margin:30px auto;padding:0 24px;color:#20201d}h1{font-size:42px;line-height:.9}article{break-inside:avoid;border-top:2px solid;padding:18px 0}img{max-width:100%;max-height:420px;object-fit:cover}small{font-weight:bold;letter-spacing:.1em}</style></head><body><h1>DIARIO<br>NORTE DE PORTUGAL 2026</h1>${Object.entries(diary).map(([name, entry]) => `<article><small>${entry.recommended ? "RECOMENDADO" : "NO REPETIRÍA"} · ${entry.rating || "—"}/5 ★</small><h2>${name}</h2><p><b>Visita:</b> ${entry.visitedAt || "—"}<br><b>Tiempo:</b> ${entry.weather || "—"}</p>${entry.photo ? `<img src="${entry.photo}" alt="">` : ""}<p>${entry.note || "Sin nota."}</p><p><b>Comimos:</b> ${entry.food || "—"} · <b>Gasto:</b> ${entry.expense || "—"}</p></article>`).join("")}<script>window.onload=()=>window.print();<\/script></body></html>`);
+    popup.document.write(`<!doctype html><html><head><title>Diario Norte de Portugal</title><style>body{font:15px Arial;max-width:820px;margin:30px auto;padding:0 24px;color:#20201d}h1{font-size:42px;line-height:.9}article{break-inside:avoid;border-top:2px solid;padding:18px 0}img{max-width:100%;max-height:420px;object-fit:cover}small{font-weight:bold;letter-spacing:.1em}</style></head><body><h1>DIARIO<br>NORTE DE PORTUGAL 2026</h1>${Object.entries(diary).map(([name, entry]) => `<article><small>${entry.recommended ? "RECOMENDADO" : "NO REPETIRÍA"} · ${entry.rating || "—"}/5 ★</small><h2>${escapeHtml(name)}</h2><p><b>Visita:</b> ${escapeHtml(entry.visitedAt || "—")}<br><b>Tiempo:</b> ${escapeHtml(entry.weather || "—")}</p>${entry.photo ? `<img src="${escapeHtml(entry.photo)}" alt="">` : ""}<p>${escapeHtml(entry.note || "Sin nota.")}</p><p><b>Comimos:</b> ${escapeHtml(entry.food || "—")} · <b>Gasto:</b> ${escapeHtml(entry.expense || "—")}</p></article>`).join("")}<script>window.onload=()=>window.print();<\/script></body></html>`);
     popup.document.close();
   }
 
